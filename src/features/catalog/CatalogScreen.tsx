@@ -8,7 +8,6 @@ import { ProductCard } from "@/ui/ProductCard";
 import { Skeleton } from "@/ui/Skeleton";
 import { EmptyState } from "@/ui/EmptyState";
 import { Text } from "@/ui/Text";
-import { Button } from "@/ui/Button";
 import type { ProductFilters, ProductType } from "@/domain/types";
 
 const SORTS = [

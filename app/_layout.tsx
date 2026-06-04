@@ -7,6 +7,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { queryClient, persister } from "@/data/queryClient";
 import { AuthProvider, useAuth } from "@/features/auth/AuthContext";
+import { ErrorBoundary } from "@/ui/ErrorBoundary";
 
 function NavigationGuard() {
   const { session, isLoading } = useAuth();
@@ -27,17 +28,19 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
-          <AuthProvider>
-            <NavigationGuard />
-            <StatusBar style="light" />
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="(tabs)" />
-              <Stack.Screen name="(auth)" />
-              <Stack.Screen name="(admin)" />
-            </Stack>
-          </AuthProvider>
-        </PersistQueryClientProvider>
+        <ErrorBoundary>
+          <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
+            <AuthProvider>
+              <NavigationGuard />
+              <StatusBar style="light" />
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="(auth)" />
+                <Stack.Screen name="(admin)" />
+              </Stack>
+            </AuthProvider>
+          </PersistQueryClientProvider>
+        </ErrorBoundary>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

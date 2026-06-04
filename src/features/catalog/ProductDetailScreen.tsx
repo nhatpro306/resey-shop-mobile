@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { View, ScrollView, Pressable, Alert, FlatList, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
@@ -15,6 +15,7 @@ import { formatVnd } from "@/lib/currency";
 import { getResizedImageUrl } from "@/domain/services/storage";
 import type { ProductVariantType } from "@/domain/types";
 import type { AppError } from "@/domain/errors";
+import { track } from "@/lib/analytics";
 import * as Haptics from "expo-haptics";
 
 const { width } = Dimensions.get("window");
@@ -62,6 +63,7 @@ export function ProductDetailScreen() {
         },
       });
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      track("add_to_cart", { productId: product.product_id, quantity: qty });
       Alert.alert("Added to cart", product.title);
     } catch (e) {
       const err = e as AppError;

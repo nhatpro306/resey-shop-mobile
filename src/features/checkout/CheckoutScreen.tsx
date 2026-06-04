@@ -17,6 +17,7 @@ import { Button } from "@/ui/Button";
 import { formatVnd } from "@/lib/currency";
 import type { PaymentMethod } from "@/domain/types";
 import type { AppError } from "@/domain/errors";
+import { track } from "@/lib/analytics";
 import * as Haptics from "expo-haptics";
 
 const schema = z.object({
@@ -74,6 +75,7 @@ export function CheckoutScreen() {
         })),
       });
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      track("purchase", { orderId: order.id, total, paymentMethod });
       router.replace(`/order-confirmation?id=${order.id}` as any);
     } catch (e) {
       const err = e as AppError;

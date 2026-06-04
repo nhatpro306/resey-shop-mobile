@@ -26,15 +26,13 @@ export function useUpdateProfile(userId: string) {
 export function useUploadAvatar(userId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ uri, mime }: { uri: string; mime: string }) =>
-      uploadAvatar(userId, uri, mime),
-    onSuccess: (url) => {
-      // Update profile avatar_url via updateProfile then invalidate
-      import("@/domain/services/profile").then(({ updateProfile: up }) =>
-        up(userId, { avatar_url: url }),
-      );
-      qc.invalidateQueries({ queryKey: qk.profile(userId) });
+    mutationFn: async ({ uri, mime }: { uri: string; mime: string }) => {
+      const url = await uploadAvatar(userId, uri, mime);
+      // Persist the new URL on the profile so it survives reloads.
+      await updateProfile(userId, { avatar_url: url });
+      return url;
     },
+    onSuccess: () => qc.invalidateQueries({ queryKey: qk.profile(userId) }),
   });
 }
 
