@@ -15,11 +15,16 @@ export type ProductFormInput = z.infer<typeof productFormSchema>;
 
 export const storeSettingsSchema = z.object({
   store_name: z.string().optional(),
-  store_description: z.string().optional(),
+  slogan: z.string().optional(),
+  announcement_text: z.string().optional(),
   hero_title: z.string().optional(),
   hero_subtitle: z.string().optional(),
+  hero_image_url: z.string().optional(),
   contact_email: z.string().email().optional().or(z.literal("")),
   contact_phone: z.string().optional(),
+  address: z.string().optional(),
+  instagram_url: z.string().optional(),
+  tiktok_url: z.string().optional(),
   bank_name: z.string().optional(),
   bank_account_number: z.string().optional(),
   bank_account_name: z.string().optional(),

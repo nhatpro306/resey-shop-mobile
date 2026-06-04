@@ -18,16 +18,21 @@ const SECTIONS: { title: string; fields: { name: keyof StoreSettingsInput; label
     title: "Branding",
     fields: [
       { name: "store_name", label: "Store name" },
-      { name: "store_description", label: "Store description" },
+      { name: "slogan", label: "Slogan" },
+      { name: "announcement_text", label: "Announcement bar text" },
       { name: "hero_title", label: "Hero title" },
       { name: "hero_subtitle", label: "Hero subtitle" },
+      { name: "hero_image_url", label: "Hero image URL" },
     ],
   },
   {
-    title: "Contact",
+    title: "Contact & social",
     fields: [
       { name: "contact_email", label: "Contact email" },
       { name: "contact_phone", label: "Contact phone" },
+      { name: "address", label: "Address" },
+      { name: "instagram_url", label: "Instagram URL" },
+      { name: "tiktok_url", label: "TikTok URL" },
     ],
   },
   {
@@ -60,11 +65,16 @@ export function AdminSettingsScreen() {
     if (settings) {
       reset({
         store_name: settings.store_name ?? "",
-        store_description: settings.store_description ?? "",
+        slogan: settings.slogan ?? "",
+        announcement_text: settings.announcement_text ?? "",
         hero_title: settings.hero_title ?? "",
         hero_subtitle: settings.hero_subtitle ?? "",
+        hero_image_url: settings.hero_image_url ?? "",
         contact_email: settings.contact_email ?? "",
         contact_phone: settings.contact_phone ?? "",
+        address: settings.address ?? "",
+        instagram_url: settings.instagram_url ?? "",
+        tiktok_url: settings.tiktok_url ?? "",
         bank_name: settings.bank_name ?? "",
         bank_account_number: settings.bank_account_number ?? "",
         bank_account_name: settings.bank_account_name ?? "",

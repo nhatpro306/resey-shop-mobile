@@ -164,27 +164,34 @@ export interface ReviewType {
   profile?: ProfileType;
 }
 
+// Matches the live `store_settings` table (shared with the web app).
 export interface StoreSettingsType {
   id?: number;
   store_name?: string | null;
-  store_logo?: string | null;
-  store_description?: string | null;
+  slogan?: string | null;
+  logo_url?: string | null;
+  announcement_text?: string | null;
+  hero_badge_text?: string | null;
   hero_title?: string | null;
   hero_subtitle?: string | null;
-  hero_image?: string | null;
-  hero_cta_text?: string | null;
-  hero_cta_link?: string | null;
-  social_facebook?: string | null;
-  social_instagram?: string | null;
-  social_tiktok?: string | null;
+  hero_image_url?: string | null;
+  hero_primary_button_text?: string | null;
+  hero_primary_button_url?: string | null;
+  hero_secondary_button_text?: string | null;
+  hero_secondary_button_url?: string | null;
+  story_title?: string | null;
+  story_description?: string | null;
+  instagram_url?: string | null;
+  tiktok_url?: string | null;
   contact_email?: string | null;
   contact_phone?: string | null;
-  contact_address?: string | null;
+  address?: string | null;
   bank_name?: string | null;
   bank_account_number?: string | null;
   bank_account_name?: string | null;
   shipping_fee?: number | null;
   free_shipping_threshold?: number | null;
+  created_at?: string | null;
   updated_at?: string | null;
 }
 

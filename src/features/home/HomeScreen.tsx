@@ -32,10 +32,10 @@ export function HomeScreen() {
         {/* Hero */}
         {settingsLoading ? (
           <Skeleton className="h-64 w-full" />
-        ) : settings?.hero_image ? (
+        ) : settings?.hero_image_url ? (
           <Pressable onPress={() => router.push("/(tabs)/catalog")} accessibilityRole="button">
             <Image
-              source={settings.hero_image}
+              source={settings.hero_image_url}
               style={{ width: "100%", height: 260 }}
               contentFit="cover"
               cachePolicy="memory-disk"
@@ -47,10 +47,10 @@ export function HomeScreen() {
               {settings.hero_subtitle && (
                 <Text variant="small" className="text-white/80">{settings.hero_subtitle}</Text>
               )}
-              {settings.hero_cta_text && (
+              {settings.hero_primary_button_text && (
                 <View className="mt-3 self-start">
                   <Button
-                    title={settings.hero_cta_text}
+                    title={settings.hero_primary_button_text}
                     onPress={() => router.push("/(tabs)/catalog")}
                     className="px-6"
                   />
@@ -61,7 +61,7 @@ export function HomeScreen() {
         ) : (
           <View className="h-48 items-center justify-center bg-surface">
             <Text variant="h1">{settings?.store_name ?? "RESEY"}</Text>
-            <Text variant="small" className="text-muted">{settings?.store_description ?? "Vietnamese streetwear"}</Text>
+            <Text variant="small" className="text-muted">{settings?.slogan ?? "Vietnamese streetwear"}</Text>
           </View>
         )}
 
