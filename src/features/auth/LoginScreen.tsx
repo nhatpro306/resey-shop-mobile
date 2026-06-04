@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, TextInput, Pressable, ScrollView, Alert } from "react-native";
+import { useState } from "react";
+import { View, ScrollView, Alert, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useForm, Controller } from "react-hook-form";
@@ -8,6 +8,8 @@ import { authService } from "@/domain/services/auth";
 import { loginSchema, type LoginInput } from "./schemas";
 import { Text } from "@/ui/Text";
 import { Button } from "@/ui/Button";
+import { Input } from "@/ui/Input";
+import { BrandMark } from "@/ui/BrandMark";
 import type { AppError } from "@/domain/errors";
 
 export function LoginScreen() {
@@ -32,69 +34,64 @@ export function LoginScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-bg">
-      <ScrollView contentContainerClassName="flex-1 justify-center px-6 gap-6" keyboardShouldPersistTaps="handled">
-        <View className="gap-1">
-          <Text variant="h1">Sign in</Text>
-          <Text variant="small">Welcome back to RESEY</Text>
+      <ScrollView contentContainerClassName="flex-1 justify-center px-6 gap-8" keyboardShouldPersistTaps="handled">
+        <View className="gap-6">
+          <BrandMark />
+          <View className="gap-1">
+            <Text variant="h1">Sign in</Text>
+            <Text variant="small">Welcome back to RESEY</Text>
+          </View>
         </View>
 
         <View className="gap-4">
-          <View className="gap-1">
-            <Controller
-              control={control}
-              name="email"
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  className="h-12 rounded-md border border-border bg-surface px-4 text-text"
-                  placeholder="Email"
-                  placeholderTextColor="#A1A1AA"
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  value={value}
-                  onChangeText={onChange}
-                  accessibilityLabel="Email"
-                />
-              )}
-            />
-            {errors.email && <Text variant="caption" className="text-danger">{errors.email.message}</Text>}
-          </View>
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label="Email"
+                placeholder="you@email.com"
+                autoCapitalize="none"
+                keyboardType="email-address"
+                value={value}
+                onChangeText={onChange}
+                error={errors.email?.message}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label="Password"
+                placeholder="••••••••"
+                password
+                value={value}
+                onChangeText={onChange}
+                error={errors.password?.message}
+              />
+            )}
+          />
 
-          <View className="gap-1">
-            <Controller
-              control={control}
-              name="password"
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  className="h-12 rounded-md border border-border bg-surface px-4 text-text"
-                  placeholder="Password"
-                  placeholderTextColor="#A1A1AA"
-                  secureTextEntry
-                  value={value}
-                  onChangeText={onChange}
-                  accessibilityLabel="Password"
-                />
-              )}
-            />
-            {errors.password && <Text variant="caption" className="text-danger">{errors.password.message}</Text>}
-          </View>
-        </View>
-
-        <Button title="Sign in" loading={loading} onPress={handleSubmit(onSubmit)} />
-
-        <View className="flex-row justify-center gap-2">
-          <Text variant="small">No account?</Text>
-          <Pressable onPress={() => router.push("/(auth)/register")} accessibilityRole="link">
-            <Text variant="small" className="text-primary font-semibold">Register</Text>
+          <Pressable
+            onPress={() => router.push("/(auth)/forgot-password")}
+            className="self-end"
+            accessibilityRole="link"
+          >
+            <Text variant="small" className="text-primary">Forgot password?</Text>
           </Pressable>
         </View>
 
-        <Pressable
-          onPress={() => router.push("/(auth)/forgot-password")}
-          className="items-center"
-          accessibilityRole="link"
-        >
-          <Text variant="small" className="text-primary">Forgot password?</Text>
-        </Pressable>
+        <View className="gap-4">
+          <Button title="Sign in" loading={loading} onPress={handleSubmit(onSubmit)} />
+          <View className="flex-row justify-center gap-2">
+            <Text variant="small">No account?</Text>
+            <Pressable onPress={() => router.push("/(auth)/register")} accessibilityRole="link">
+              <Text variant="small" className="text-primary font-semibold">Register</Text>
+            </Pressable>
+          </View>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
