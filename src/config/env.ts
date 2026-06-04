@@ -17,11 +17,20 @@ function required(value: string | undefined, name: string): string {
   return value ?? "";
 }
 
+// Prefer `process.env.EXPO_PUBLIC_*` — Metro statically inlines these into the bundle
+// on every platform (including web, where `Constants.expoConfig.extra` is empty).
+// Fall back to the app.config `extra` block for safety on native.
 export const env = {
-  supabaseUrl: required(extra.supabaseUrl, "EXPO_PUBLIC_SUPABASE_URL"),
-  supabaseAnonKey: required(extra.supabaseAnonKey, "EXPO_PUBLIC_SUPABASE_ANON_KEY"),
-  sentryDsn: extra.sentryDsn ?? "",
+  supabaseUrl: required(
+    process.env.EXPO_PUBLIC_SUPABASE_URL ?? extra.supabaseUrl,
+    "EXPO_PUBLIC_SUPABASE_URL",
+  ),
+  supabaseAnonKey: required(
+    process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? extra.supabaseAnonKey,
+    "EXPO_PUBLIC_SUPABASE_ANON_KEY",
+  ),
+  sentryDsn: process.env.EXPO_PUBLIC_SENTRY_DSN ?? extra.sentryDsn ?? "",
   // Base URL of the web app — used to resolve relative image paths (e.g. /products/x.jpg)
   // stored by the web app. Strip any trailing slash.
-  webUrl: (extra.webUrl ?? "").replace(/\/+$/, ""),
+  webUrl: (process.env.EXPO_PUBLIC_WEB_URL ?? extra.webUrl ?? "").replace(/\/+$/, ""),
 };
