@@ -7,7 +7,13 @@ module.exports = [
     ignores: ["node_modules/**", ".expo/**", "dist/**", "babel.config.js"],
   },
   {
-    files: ["app/**/*.{ts,tsx}", "src/ui/**/*.{ts,tsx}", "src/features/**/*.{ts,tsx}"],
+    // AuthContext is the one legitimate place that touches Supabase outside of services.
+    files: [
+      "app/**/*.{ts,tsx}",
+      "src/ui/**/*.{ts,tsx}",
+      "src/features/**/*.{ts,tsx}",
+    ],
+    ignores: ["src/features/auth/AuthContext.tsx"],
     rules: {
       // UI must not import the supabase client directly — go through hooks/services.
       "no-restricted-imports": [

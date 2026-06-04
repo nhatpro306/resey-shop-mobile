@@ -1,5 +1,2 @@
-import { ScreenPlaceholder } from "@/ui/ScreenPlaceholder";
-
-export default function HomeScreen() {
-  return <ScreenPlaceholder title="RESEY" subtitle="Storefront home — built in M3" />;
-}
+import { HomeScreen } from "@/features/home/HomeScreen";
+export default HomeScreen;

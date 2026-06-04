@@ -1,5 +1,2 @@
-import { ScreenPlaceholder } from "@/ui/ScreenPlaceholder";
-
-export default function OrdersScreen() {
-  return <ScreenPlaceholder title="Orders" subtitle="History + tracking — built in M4" />;
-}
+import { OrdersScreen } from "@/features/orders/OrdersScreen";
+export default OrdersScreen;

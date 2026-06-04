@@ -1,5 +1,2 @@
-import { ScreenPlaceholder } from "@/ui/ScreenPlaceholder";
-
-export default function CartScreen() {
-  return <ScreenPlaceholder title="Cart" subtitle="Optimistic cart — built in M3" />;
-}
+import { CartScreen } from "@/features/cart/CartScreen";
+export default CartScreen;

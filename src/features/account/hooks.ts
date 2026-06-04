@@ -1,0 +1,106 @@
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { qk } from "@/domain/services/keys";
+import { getProfile, updateProfile, uploadAvatar } from "@/domain/services/profile";
+import {
+  getAddresses, saveAddress, updateAddress, deleteAddress, setDefaultAddress,
+} from "@/domain/services/address";
+import { getReviewsByProduct, createReview, deleteReview } from "@/domain/services/review";
+
+export function useProfile(userId: string | null) {
+  return useQuery({
+    queryKey: qk.profile(userId ?? ""),
+    queryFn: () => getProfile(userId!),
+    enabled: !!userId,
+    staleTime: 60_000,
+  });
+}
+
+export function useUpdateProfile(userId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (fields: Parameters<typeof updateProfile>[1]) => updateProfile(userId, fields),
+    onSuccess: () => qc.invalidateQueries({ queryKey: qk.profile(userId) }),
+  });
+}
+
+export function useUploadAvatar(userId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ uri, mime }: { uri: string; mime: string }) =>
+      uploadAvatar(userId, uri, mime),
+    onSuccess: (url) => {
+      // Update profile avatar_url via updateProfile then invalidate
+      import("@/domain/services/profile").then(({ updateProfile: up }) =>
+        up(userId, { avatar_url: url }),
+      );
+      qc.invalidateQueries({ queryKey: qk.profile(userId) });
+    },
+  });
+}
+
+export function useAddresses(userId: string | null) {
+  return useQuery({
+    queryKey: ["addresses", userId ?? ""],
+    queryFn: () => getAddresses(userId!),
+    enabled: !!userId,
+    staleTime: 60_000,
+  });
+}
+
+export function useSaveAddress(userId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (address: Parameters<typeof saveAddress>[1]) => saveAddress(userId, address),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["addresses", userId] }),
+  });
+}
+
+export function useUpdateAddress(userId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, fields }: { id: number; fields: Parameters<typeof updateAddress>[1] }) =>
+      updateAddress(id, fields),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["addresses", userId] }),
+  });
+}
+
+export function useDeleteAddress(userId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => deleteAddress(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["addresses", userId] }),
+  });
+}
+
+export function useSetDefaultAddress(userId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => setDefaultAddress(userId, id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["addresses", userId] }),
+  });
+}
+
+export function useReviews(productId: string) {
+  return useQuery({
+    queryKey: ["reviews", productId],
+    queryFn: () => getReviewsByProduct(productId),
+    staleTime: 60_000,
+  });
+}
+
+export function useCreateReview(userId: string, productId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ rating, comment }: { rating: number; comment: string }) =>
+      createReview(productId, userId, rating, comment),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["reviews", productId] }),
+  });
+}
+
+export function useDeleteReview(userId: string, productId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => deleteReview(id, userId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["reviews", productId] }),
+  });
+}
