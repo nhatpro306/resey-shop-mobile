@@ -30,7 +30,8 @@ export async function updateProfile(
 // Returns the public URL. Path: avatars/<userId>/<filename>
 export async function uploadAvatar(userId: string, uri: string, mime: string): Promise<string> {
   const ext = mime.split("/")[1] ?? "jpg";
-  const path = `avatars/${userId}/avatar.${ext}`;
+  // Path is relative to the bucket; first folder = user id so RLS can scope writes.
+  const path = `${userId}/avatar.${ext}`;
 
   const response = await fetch(uri);
   const blob = await response.blob();

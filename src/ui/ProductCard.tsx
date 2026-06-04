@@ -2,7 +2,7 @@ import { Pressable, View } from "react-native";
 import { Image } from "expo-image";
 import { Text } from "./Text";
 import { formatVnd } from "@/lib/currency";
-import { getResizedImageUrl } from "@/domain/services/storage";
+import { getResizedImageUrl } from "@/lib/imageUrl";
 import type { ProductType } from "@/domain/types";
 
 interface ProductCardProps {

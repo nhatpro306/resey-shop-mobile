@@ -4,6 +4,7 @@ type Extra = {
   supabaseUrl: string;
   supabaseAnonKey: string;
   sentryDsn: string;
+  webUrl: string;
 };
 
 const extra = (Constants.expoConfig?.extra ?? {}) as Partial<Extra>;
@@ -20,4 +21,7 @@ export const env = {
   supabaseUrl: required(extra.supabaseUrl, "EXPO_PUBLIC_SUPABASE_URL"),
   supabaseAnonKey: required(extra.supabaseAnonKey, "EXPO_PUBLIC_SUPABASE_ANON_KEY"),
   sentryDsn: extra.sentryDsn ?? "",
+  // Base URL of the web app — used to resolve relative image paths (e.g. /products/x.jpg)
+  // stored by the web app. Strip any trailing slash.
+  webUrl: (extra.webUrl ?? "").replace(/\/+$/, ""),
 };

@@ -10,7 +10,7 @@ import { Button } from "@/ui/Button";
 import { EmptyState } from "@/ui/EmptyState";
 import { Skeleton } from "@/ui/Skeleton";
 import { formatVnd } from "@/lib/currency";
-import { getResizedImageUrl } from "@/domain/services/storage";
+import { getResizedImageUrl } from "@/lib/imageUrl";
 import type { CartItemType } from "@/domain/types";
 
 export function CartScreen() {

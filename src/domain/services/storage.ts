@@ -1,6 +1,10 @@
 import { supabase } from "@/data/supabase";
 import { mapSupabaseError } from "@/domain/errors";
 
+// Image URL helpers live in @/lib/imageUrl (pure, no supabase dep). Re-exported
+// here for back-compat with existing imports.
+export { resolveImageUrl, getResizedImageUrl } from "@/lib/imageUrl";
+
 export async function uploadProductImage(
   productId: string,
   uri: string,
@@ -26,9 +30,3 @@ export async function deleteProductImage(path: string): Promise<true> {
   return true;
 }
 
-// Return a CDN-resized image URL from Supabase Storage (if transform is enabled on the plan).
-export function getResizedImageUrl(url: string, width: number): string {
-  if (!url.includes("supabase")) return url;
-  const separator = url.includes("?") ? "&" : "?";
-  return `${url}${separator}width=${width}&format=webp`;
-}

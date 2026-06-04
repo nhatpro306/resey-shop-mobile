@@ -12,7 +12,7 @@ import { Button } from "@/ui/Button";
 import { Skeleton } from "@/ui/Skeleton";
 import { Badge } from "@/ui/Badge";
 import { formatVnd } from "@/lib/currency";
-import { getResizedImageUrl } from "@/domain/services/storage";
+import { getResizedImageUrl } from "@/lib/imageUrl";
 import type { ProductVariantType } from "@/domain/types";
 import type { AppError } from "@/domain/errors";
 import { track } from "@/lib/analytics";
