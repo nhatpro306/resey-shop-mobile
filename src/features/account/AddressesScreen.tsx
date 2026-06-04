@@ -1,5 +1,5 @@
 import React from "react";
-import { View, FlatList, Pressable, Alert } from "react-native";
+import { View, FlatList, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useAddresses, useDeleteAddress, useSetDefaultAddress } from "./hooks";

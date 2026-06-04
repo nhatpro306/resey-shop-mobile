@@ -1,0 +1,10 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "expo export --platform web && node scripts/inject-web-pwa.mjs",
+  "outputDirectory": "dist",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "framework": null,
+  "rewrites": [
+    { "source": "/((?!assets/|icons/|_expo/|favicon|manifest|.*\\.).*)", "destination": "/" }
+  ]
+}

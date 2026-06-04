@@ -1,96 +1,119 @@
-# Deployment & Release Runbook
+# Deployment Runbook — RESEY Shop Mobile
 
-Everything code-side is done. The steps below need **your accounts** (Expo, Apple, Google,
-Sentry) — they can't be automated without credentials. Run them in order.
+Goal: **internal / direct distribution**, no public App Store or Google Play release.
+Three surfaces: **Web/PWA (Vercel)**, **Android APK (internal)**, **iOS (Expo Go / internal)**.
+
+Code-side is ready. Steps below need **your accounts** (Vercel, Expo, optionally Apple/Sentry).
+
+Related docs: [PRODUCT_LAUNCH_CHECKLIST.md](../PRODUCT_LAUNCH_CHECKLIST.md) · [SUPABASE_SETUP.md](../SUPABASE_SETUP.md)
 
 ---
 
-## 0. Prerequisites (one-time)
-- [Expo account](https://expo.dev) (free)
-- Apple Developer account ($99/yr) for iOS
-- Google Play Developer account ($25 once) for Android
-- (Optional) [Sentry](https://sentry.io) account for crash reporting
+## 0. Env vars (all surfaces)
 
-Install the CLI:
+Public client values only — never the service-role key.
+
+```
+EXPO_PUBLIC_SUPABASE_URL=https://<ref>.supabase.co
+EXPO_PUBLIC_SUPABASE_ANON_KEY=<anon key>
+EXPO_PUBLIC_WEB_URL=https://<your-web-app>   # resolves relative product image paths
+EXPO_PUBLIC_SENTRY_DSN=                       # optional; empty disables Sentry
+```
+
+---
+
+## 1. Web / PWA → Vercel
+
+Build is configured in [`vercel.json`](../vercel.json):
+- Install: `pnpm install --frozen-lockfile`
+- Build: `expo export --platform web && node scripts/inject-web-pwa.mjs`
+- Output: `dist/` (SPA, `output: "single"`)
+- Rewrites: all client routes → `/` (refresh-safe deep links)
+
+Steps:
+1. Import the repo in Vercel (or `vercel` CLI). Framework preset: **Other** (vercel.json drives it).
+2. Set the env vars from §0 in Vercel → Project → Settings → Environment Variables (Production + Preview).
+3. Deploy. Verify:
+   - App loads, refresh on `/product/<slug>` works (no 404).
+   - DevTools → Application → Manifest: no errors, installable.
+   - Mobile browser → Add to Home Screen → opens standalone, dark theme color.
+   - Images load (needs `EXPO_PUBLIC_WEB_URL`), cart + checkout work, admin gated.
+
+Local equivalent: `pnpm build:web` then serve `dist/` (e.g. `npx serve dist`).
+
+---
+
+## 2. Android APK (internal, no Play Store)
+
+`eas.json` `preview` profile builds a direct-install **APK** (`android.buildType: apk`, `distribution: internal`).
+
 ```bash
 npm install -g eas-cli
 eas login
+eas init                      # one-time: creates EAS project id
+# env as EAS secrets (repeat per environment):
+eas env:create --name EXPO_PUBLIC_SUPABASE_URL --value "https://<ref>.supabase.co" --environment preview
+eas env:create --name EXPO_PUBLIC_SUPABASE_ANON_KEY --value "<anon>" --environment preview
+eas env:create --name EXPO_PUBLIC_WEB_URL --value "https://<web>" --environment preview
+
+eas build --platform android --profile preview
 ```
 
----
-
-## 1. Link the EAS project
-```bash
-eas init          # creates the project on expo.dev, writes projectId
-```
-This adds `extra.eas.projectId` to the Expo config. **Push notifications start working
-automatically once this exists** — `src/lib/notifications.ts` is already guarded on it.
+- Download the `.apk` from the EAS build page.
+- Install directly on a device (enable **Install unknown apps**) or share the link.
+- **Google Play account is not required** for this internal flow.
+- Verify on a real device: login, product list/detail, add to cart, checkout, order history, admin image upload.
 
 ---
 
-## 2. Environment variables (per build profile)
-The app reads `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY`, and
-`EXPO_PUBLIC_SENTRY_DSN`. Set them as EAS secrets so they're injected at build time:
-```bash
-eas env:create --name EXPO_PUBLIC_SUPABASE_URL --value "https://xxxx.supabase.co" --environment production
-eas env:create --name EXPO_PUBLIC_SUPABASE_ANON_KEY --value "ey..." --environment production
-eas env:create --name EXPO_PUBLIC_SENTRY_DSN --value "https://...@sentry.io/..." --environment production
-```
-(Repeat with `--environment preview` for QA builds. Leave the Sentry one empty to disable reporting.)
+## 3. iOS (test / internal)
+
+| Path | Needs Apple Developer? | How |
+|---|---|---|
+| Expo Go | No | `pnpm start`, scan QR with the Expo Go app |
+| iOS Simulator (Mac) | No | `pnpm ios` |
+| Real-device internal build | **Yes ($99/yr)** | `eas build --platform ios --profile preview` (signing) |
+
+App Store submission is **out of scope**. For day-to-day internal iOS testing, Expo Go covers most flows; a real-device internal build only matters if you need native modules / standalone behavior, and that requires Apple signing.
 
 ---
 
-## 3. Sentry sourcemaps (optional — only if using Sentry)
-Crash reporting already works at runtime (`src/lib/sentry.ts`, guarded on the DSN).
-For readable stack traces, add the Sentry Expo plugin + wrap metro:
-```bash
-npx @sentry/wizard@latest -i reactNative
-```
-This adds the config plugin (needs your Sentry org/project slug) and `getSentryExpoConfig`
-to `metro.config.js`. Until you do this, errors still report — just with minified frames.
+## 4. Supabase
+
+See [SUPABASE_SETUP.md](../SUPABASE_SETUP.md). Before launch:
+- [ ] Tables, `create_order_checkout` RPC, `product-images` + `avatars` buckets exist.
+- [ ] RLS verified as anon and non-admin.
+- [ ] Auth redirect URLs include `resey://` and the Vercel web URL.
+- [ ] At least one `store_settings` row.
 
 ---
 
-## 4. Builds
-```bash
-# Internal QA (installable on registered devices / internal track)
-eas build --profile preview --platform all
+## 5. Test checklist (every surface)
 
-# Production store builds
-eas build --profile production --platform all
-```
-Profiles are already defined in `eas.json`.
+Auth (register/login/logout) · product list · product detail · add to cart · cart respects stock ·
+checkout · order history · profile/address · admin login + protection · admin add/edit product ·
+admin image upload · admin orders.
 
 ---
 
-## 5. Submit to stores
-```bash
-eas submit --profile production --platform ios       # → TestFlight / App Store Connect
-eas submit --profile production --platform android    # → Play internal testing
-```
-First submit will prompt for App Store Connect / Play Console credentials and create the listing.
+## 6. Rollback
+
+- **Web**: Vercel → Deployments → promote the previous deployment (instant).
+- **APK**: re-distribute the previous `.apk` (keep prior builds in EAS).
+- **JS-only OTA** (if EAS Update configured): `eas update --branch preview --message "rollback"`; native changes still need a rebuild.
 
 ---
 
-## 6. OTA updates (JS-only changes, no rebuild)
-```bash
-eas update --branch production --message "Fix copy on checkout"
-```
-Native changes (new native module, icon, permissions) still require a new build.
+## 7. Limitations / risks
+
+- iOS real-device distribution needs an Apple Developer account.
+- Web JS bundle ~4.3 MB (acceptable internally; lazy-load later if needed).
+- PWA icons derived from the 1024² app icon (installable; regenerate for crisper small sizes if wanted).
+- Static (prerendered) web export is intentionally **not** used — the Supabase client requires runtime env, so the app ships as a client-rendered SPA.
 
 ---
 
-## 7. Store listing assets (manual)
-- App icon: `assets/icon.png` (already set)
-- Screenshots: capture from a device/simulator per store size requirements
-- Privacy policy URL (required by both stores) — the app collects email + order/address data
-- iOS: App Privacy questionnaire (data used: email, name, address, purchase history; not for tracking)
-- Android: Data safety form (same)
+## 8. Optional — Sentry sourcemaps
 
----
-
-## Backend checklist before launch (see README "Connecting the backend")
-- [ ] `avatars` + `product-images` storage buckets exist with path-scoped RLS
-- [ ] RLS policies verified as anon and as non-admin (no unauthorized writes)
-- [ ] `create_order_checkout` RPC present (shared with web — already there)
-- [ ] At least one `store_settings` row (hero, banking, shipping) populated
+Crash reporting works at runtime when `EXPO_PUBLIC_SENTRY_DSN` is set (`src/lib/sentry.ts`).
+For readable stack traces: `npx @sentry/wizard@latest -i reactNative` (adds the config plugin + metro wrap; needs your Sentry org/project).
