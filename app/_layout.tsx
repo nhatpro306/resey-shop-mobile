@@ -8,6 +8,10 @@ import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client
 import { queryClient, persister } from "@/data/queryClient";
 import { AuthProvider, useAuth } from "@/features/auth/AuthContext";
 import { ErrorBoundary } from "@/ui/ErrorBoundary";
+import { PushRegistration } from "@/features/notifications/PushRegistration";
+import { initSentry } from "@/lib/sentry";
+
+initSentry();
 
 function NavigationGuard() {
   const { session, isLoading } = useAuth();
@@ -32,6 +36,7 @@ export default function RootLayout() {
           <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
             <AuthProvider>
               <NavigationGuard />
+              <PushRegistration />
               <StatusBar style="light" />
               <Stack screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="(tabs)" />

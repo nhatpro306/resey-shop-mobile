@@ -48,9 +48,10 @@ Supabase client. `src/domain` stays framework-free. Full docs in [docs/](docs/RE
   optimistic cart, checkout via `create_order_checkout` RPC, orders + status timeline, profile +
   avatar upload, address CRUD, admin (dashboard, product CRUD + image upload, orders, users, settings),
   error boundary, typed analytics scaffold.
-- **Remaining (M7–M8, need accounts/credentials):** Sentry DSN wiring, push notifications,
-  i18n vi/en, EAS build + store submission. See [docs/DIFF.md](docs/DIFF.md) and
-  [docs/AGENT_PLAYBOOK.md](docs/AGENT_PLAYBOOK.md).
+- **M7 wired (client-side, guarded):** Sentry crash reporting (no-ops until DSN set),
+  push-notification registration (activates once an EAS project exists), typed analytics.
+- **Remaining (need your accounts):** EAS build + store submission, Sentry sourcemaps,
+  i18n vi/en. Step-by-step in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ## Security
 Anon key only. RLS is the security boundary. Secrets live in Supabase Edge Functions, never the app.

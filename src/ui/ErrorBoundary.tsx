@@ -2,6 +2,7 @@ import React from "react";
 import { View } from "react-native";
 import { Text } from "./Text";
 import { Button } from "./Button";
+import { captureException } from "@/lib/sentry";
 
 interface State {
   hasError: boolean;
@@ -18,7 +19,7 @@ export class ErrorBoundary extends React.Component<{ children: React.ReactNode }
   }
 
   componentDidCatch(error: Error) {
-    // TODO(M7): Sentry.captureException(error)
+    captureException(error);
     if (__DEV__) console.error("ErrorBoundary caught:", error);
   }
 

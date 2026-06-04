@@ -20,7 +20,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     predictiveBackGestureEnabled: false,
   },
   web: { favicon: "./assets/favicon.png" },
-  plugins: ["expo-router", "expo-secure-store", "expo-image"],
+  plugins: ["expo-router", "expo-secure-store", "expo-image", "expo-notifications"],
   experiments: { typedRoutes: true },
   extra: {
     supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL ?? "",
