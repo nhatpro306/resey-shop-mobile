@@ -2,10 +2,11 @@ import { View } from "react-native";
 import { Text } from "./Text";
 import { cn } from "@/lib/cn";
 
-type Variant = "default" | "success" | "warning" | "danger" | "info";
+type Variant = "default" | "primary" | "success" | "warning" | "danger" | "info";
 
 const bg: Record<Variant, string> = {
   default: "bg-surface",
+  primary: "bg-primary",
   success: "bg-success/20",
   warning: "bg-warning/20",
   danger: "bg-danger/20",
@@ -13,6 +14,7 @@ const bg: Record<Variant, string> = {
 };
 const textColor: Record<Variant, string> = {
   default: "text-muted",
+  primary: "text-primary-fg",
   success: "text-success",
   warning: "text-warning",
   danger: "text-danger",
