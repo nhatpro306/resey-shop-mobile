@@ -6,7 +6,7 @@ export const tokens = {
     text: "#FAFAFA",
     muted: "#A1A1AA",
     border: "#262626",
-    primary: "#E11D48",
+    primary: "#6E0F11",
     primaryFg: "#FFFFFF",
     success: "#22C55E",
     warning: "#F59E0B",
@@ -14,6 +14,6 @@ export const tokens = {
     info: "#3B82F6",
   },
   spacing: [4, 8, 12, 16, 20, 24, 32, 40, 48],
-  radius: { sm: 8, md: 12, lg: 16, pill: 999 },
+  radius: { sm: 0, md: 0, lg: 0, pill: 999 },
   motion: { fast: 150, base: 250 },
 } as const;
