@@ -67,10 +67,13 @@ export function HomeScreen() {
 
         {/* New arrivals */}
         <View className="px-4 pb-6 pt-5">
-          <View className="mb-3 flex-row items-center justify-between">
-            <Text variant="h2">New arrivals</Text>
+          <View className="mb-3 flex-row items-end justify-between">
+            <View className="gap-0.5">
+              <Text variant="overline" className="text-muted">Just dropped</Text>
+              <Text variant="h2">New arrivals</Text>
+            </View>
             <Pressable onPress={() => router.push("/(tabs)/catalog")} accessibilityRole="link">
-              <Text variant="small" className="text-primary">See all</Text>
+              <Text variant="small" className="text-primary font-semibold">See all</Text>
             </Pressable>
           </View>
 

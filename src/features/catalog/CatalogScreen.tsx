@@ -3,12 +3,32 @@ import { View, TextInput, Pressable, FlatList, RefreshControl } from "react-nati
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { FlashList } from "@shopify/flash-list";
+import Feather from "@expo/vector-icons/Feather";
 import { useProducts, useCategories } from "./hooks";
 import { ProductCard } from "@/ui/ProductCard";
 import { Skeleton } from "@/ui/Skeleton";
 import { EmptyState } from "@/ui/EmptyState";
 import { Text } from "@/ui/Text";
+import { tokens } from "@/config/theme";
+import { cn } from "@/lib/cn";
 import type { ProductFilters, ProductType } from "@/domain/types";
+
+function Chip({ active, label, onPress }: { active: boolean; label: string; onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      className={cn(
+        "border px-3 py-1.5",
+        active ? "border-primary bg-primary" : "border-border bg-surface",
+      )}
+      accessibilityRole="button"
+    >
+      <Text variant="caption" className={cn("font-semibold", active ? "text-primary-fg" : "text-muted")}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
 
 const SORTS = [
   { key: "newest", label: "Newest" },
@@ -47,16 +67,30 @@ export function CatalogScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={["top"]}>
+      {/* Header */}
+      <View className="px-4 pt-4">
+        <Text variant="overline" className="text-muted">Shop</Text>
+        <Text variant="h1">All products</Text>
+      </View>
+
       {/* Search */}
-      <View className="px-4 pb-2 pt-4">
-        <TextInput
-          className="h-10 rounded-md border border-border bg-surface px-3 text-text text-sm"
-          placeholder="Search products..."
-          placeholderTextColor="#A1A1AA"
-          value={search}
-          onChangeText={setSearch}
-          accessibilityLabel="Search products"
-        />
+      <View className="px-4 pb-2 pt-3">
+        <View className="h-11 flex-row items-center gap-2 border border-border bg-surface px-3">
+          <Feather name="search" size={16} color={tokens.color.muted} />
+          <TextInput
+            className="flex-1 text-sm text-text"
+            placeholder="Search products..."
+            placeholderTextColor={tokens.color.muted}
+            value={search}
+            onChangeText={setSearch}
+            accessibilityLabel="Search products"
+          />
+          {search.length > 0 ? (
+            <Pressable onPress={() => setSearch("")} hitSlop={8} accessibilityLabel="Clear search">
+              <Feather name="x" size={16} color={tokens.color.muted} />
+            </Pressable>
+          ) : null}
+        </View>
       </View>
 
       {/* Category chips */}
@@ -67,19 +101,11 @@ export function CatalogScreen() {
         keyExtractor={(item) => String(item.id ?? "all")}
         contentContainerClassName="gap-2 px-4 pb-2"
         renderItem={({ item }) => (
-          <Pressable
+          <Chip
+            active={filters.categoryId === (item.id ?? undefined)}
+            label={item.name}
             onPress={() => setFilters((f) => ({ ...f, categoryId: item.id ?? undefined }))}
-            className={`rounded-pill border px-3 py-1 ${
-              filters.categoryId === (item.id ?? undefined)
-                ? "border-primary bg-primary"
-                : "border-border bg-surface"
-            }`}
-            accessibilityRole="button"
-          >
-            <Text variant="caption" className={filters.categoryId === (item.id ?? undefined) ? "text-primary-fg font-semibold" : ""}>
-              {item.name}
-            </Text>
-          </Pressable>
+          />
         )}
       />
 
@@ -91,17 +117,11 @@ export function CatalogScreen() {
         keyExtractor={(s) => s.key}
         contentContainerClassName="gap-2 px-4 pb-3"
         renderItem={({ item }) => (
-          <Pressable
+          <Chip
+            active={filters.sort === item.key}
+            label={item.label}
             onPress={() => setFilters((f) => ({ ...f, sort: item.key as ProductFilters["sort"] }))}
-            className={`rounded-pill border px-3 py-1 ${
-              filters.sort === item.key ? "border-primary bg-primary" : "border-border bg-surface"
-            }`}
-            accessibilityRole="button"
-          >
-            <Text variant="caption" className={filters.sort === item.key ? "text-primary-fg font-semibold" : ""}>
-              {item.label}
-            </Text>
-          </Pressable>
+          />
         )}
       />
 
