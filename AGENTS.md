@@ -1,4 +1,4 @@
-# CLAUDE.md — RESEY Shop Mobile
+# AGENTS.md — RESEY Shop Mobile
 
 Expo / React Native client for the RESEY Shop e-commerce platform (Vietnamese streetwear).
 Backend is the **existing Supabase project** shared with the web app (Next.js). No separate API.

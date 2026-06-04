@@ -21,3 +21,5 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test --ci
+      # Bundle smoke test — catches Metro/module-resolution errors the above miss.
+      - run: npx expo export --platform ios --output-dir /tmp/export
