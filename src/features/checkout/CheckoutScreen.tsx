@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { View, ScrollView, TextInput, Pressable, Alert } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View, ScrollView, Pressable, Alert } from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import Feather from "@expo/vector-icons/Feather";
 import { useCart } from "@/features/cart/hooks";
 import { usePlaceOrder } from "@/features/orders/hooks";
 import { useAddresses } from "@/features/account/hooks";
@@ -14,7 +15,10 @@ import { getStoreSettings } from "@/domain/services/settings";
 import { qk } from "@/domain/services/keys";
 import { Text } from "@/ui/Text";
 import { Button } from "@/ui/Button";
+import { Input } from "@/ui/Input";
 import { formatVnd } from "@/lib/currency";
+import { tokens } from "@/config/theme";
+import { cn } from "@/lib/cn";
 import type { PaymentMethod } from "@/domain/types";
 import type { AppError } from "@/domain/errors";
 import { track } from "@/lib/analytics";
@@ -28,8 +32,27 @@ const schema = z.object({
 });
 type FormData = z.infer<typeof schema>;
 
+function SelectRow({ selected, children, onPress }: { selected: boolean; children: React.ReactNode; onPress: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      className={cn("flex-row items-center gap-3 border bg-surface p-3", selected ? "border-primary" : "border-border")}
+      accessibilityRole="radio"
+      accessibilityState={{ selected }}
+    >
+      <Feather
+        name={selected ? "check-circle" : "circle"}
+        size={18}
+        color={selected ? tokens.color.primary : tokens.color.muted}
+      />
+      <View className="flex-1">{children}</View>
+    </Pressable>
+  );
+}
+
 export function CheckoutScreen() {
   const { user } = useAuth();
+  const insets = useSafeAreaInsets();
   const { data: cart } = useCart(user?.id ?? null);
   const { data: addresses } = useAddresses(user?.id ?? null);
   const { data: settings } = useQuery({ queryKey: qk.storeSettings(), queryFn: getStoreSettings });
@@ -84,7 +107,7 @@ export function CheckoutScreen() {
     }
   }
 
-  const fieldDef: { name: keyof FormData; label: string; keyboard?: any; secure?: boolean }[] = [
+  const fieldDef: { name: keyof FormData; label: string; keyboard?: any }[] = [
     { name: "customerName", label: "Full name" },
     { name: "customerPhone", label: "Phone number", keyboard: "phone-pad" },
     { name: "customerEmail", label: "Email (optional)", keyboard: "email-address" },
@@ -93,92 +116,77 @@ export function CheckoutScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={["bottom"]}>
-      <ScrollView contentContainerClassName="gap-5 px-4 pt-4 pb-6" keyboardShouldPersistTaps="handled">
-        <Text variant="h2">Checkout</Text>
+      <ScrollView contentContainerClassName="gap-6 px-4 pb-6 pt-4" keyboardShouldPersistTaps="handled">
+        <View>
+          <Text variant="overline" className="text-muted">Almost there</Text>
+          <Text variant="h1">Checkout</Text>
+        </View>
 
         {/* Contact */}
         <View className="gap-3">
-          <Text variant="small" className="font-semibold">Contact info</Text>
+          <Text variant="overline" className="text-muted">Contact info</Text>
           {fieldDef.map(({ name, label, keyboard }) => (
-            <View key={name} className="gap-1">
-              <Controller
-                control={control}
-                name={name}
-                render={({ field: { onChange, value } }) => (
-                  <TextInput
-                    className="h-12 rounded-md border border-border bg-surface px-4 text-text text-sm"
-                    placeholder={label}
-                    placeholderTextColor="#A1A1AA"
-                    keyboardType={keyboard ?? "default"}
-                    value={value ?? ""}
-                    onChangeText={onChange}
-                    accessibilityLabel={label}
-                  />
-                )}
-              />
-              {errors[name] && (
-                <Text variant="caption" className="text-danger">{errors[name]?.message}</Text>
+            <Controller
+              key={name}
+              control={control}
+              name={name}
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  placeholder={label}
+                  keyboardType={keyboard ?? "default"}
+                  autoCapitalize={name === "customerEmail" ? "none" : "sentences"}
+                  value={value ?? ""}
+                  onChangeText={onChange}
+                  error={errors[name]?.message}
+                  accessibilityLabel={label}
+                />
               )}
-            </View>
+            />
           ))}
         </View>
 
         {/* Address */}
         <View className="gap-2">
-          <Text variant="small" className="font-semibold">Shipping address</Text>
+          <Text variant="overline" className="text-muted">Shipping address</Text>
           {(addresses ?? []).length === 0 ? (
             <Button title="Add address" variant="secondary" onPress={() => router.push("/add-address" as any)} />
           ) : (
             (addresses ?? []).map((a) => (
-              <Pressable
-                key={a.id}
-                onPress={() => setSelectedAddressId(a.id)}
-                className={`rounded-lg border p-3 ${
-                  selectedAddressId === a.id ? "border-primary" : "border-border"
-                } bg-surface`}
-                accessibilityRole="radio"
-              >
+              <SelectRow key={a.id} selected={selectedAddressId === a.id} onPress={() => setSelectedAddressId(a.id)}>
                 <Text variant="small">{a.street}, {a.city}</Text>
                 {a.state ? <Text variant="caption" className="text-muted">{a.state}, {a.country}</Text> : null}
-              </Pressable>
+              </SelectRow>
             ))
           )}
         </View>
 
         {/* Payment */}
         <View className="gap-2">
-          <Text variant="small" className="font-semibold">Payment method</Text>
+          <Text variant="overline" className="text-muted">Payment method</Text>
           {(["cod", "bank_transfer"] as PaymentMethod[]).map((method) => (
-            <Pressable
-              key={method}
-              onPress={() => setPaymentMethod(method)}
-              className={`rounded-lg border p-3 ${
-                paymentMethod === method ? "border-primary" : "border-border"
-              } bg-surface`}
-              accessibilityRole="radio"
-            >
+            <SelectRow key={method} selected={paymentMethod === method} onPress={() => setPaymentMethod(method)}>
               <Text variant="small" className="font-semibold">
                 {method === "cod" ? "Cash on delivery (COD)" : "Bank transfer"}
               </Text>
-            </Pressable>
+            </SelectRow>
           ))}
 
-          {paymentMethod === "bank_transfer" && settings?.bank_name && (
-            <View className="rounded-lg bg-surface p-3 gap-1">
-              <Text variant="caption" className="font-semibold">Bank details</Text>
+          {paymentMethod === "bank_transfer" && settings?.bank_name ? (
+            <View className="gap-1 bg-surface p-3">
+              <Text variant="overline" className="text-muted">Bank details</Text>
               <Text variant="caption">{settings.bank_name}</Text>
               <Text variant="caption">{settings.bank_account_number}</Text>
               <Text variant="caption">{settings.bank_account_name}</Text>
-              <Text variant="caption" className="text-muted mt-1">
+              <Text variant="caption" className="mt-1 text-muted">
                 Order will be confirmed after transfer is verified.
               </Text>
             </View>
-          )}
+          ) : null}
         </View>
 
         {/* Summary */}
-        <View className="rounded-lg bg-surface p-4 gap-2">
-          <Text variant="small" className="font-semibold">Order summary</Text>
+        <View className="gap-2 bg-surface p-4">
+          <Text variant="overline" className="text-muted">Order summary</Text>
           <View className="flex-row justify-between">
             <Text variant="caption">Subtotal</Text>
             <Text variant="caption">{formatVnd(subtotal)}</Text>
@@ -187,19 +195,18 @@ export function CheckoutScreen() {
             <Text variant="caption">Shipping</Text>
             <Text variant="caption">{shippingFee === 0 ? "Free" : formatVnd(shippingFee)}</Text>
           </View>
-          <View className="border-t border-border pt-2 flex-row justify-between">
+          <View className="flex-row justify-between border-t border-border pt-2">
             <Text variant="small" className="font-bold">Total</Text>
             <Text variant="small" className="font-bold text-primary">{formatVnd(total)}</Text>
           </View>
         </View>
       </ScrollView>
 
-      <View className="border-t border-border bg-bg px-4 py-3">
-        <Button
-          title="Place order"
-          loading={placeOrder.isPending}
-          onPress={handleSubmit(onSubmit)}
-        />
+      <View
+        className="border-t border-border bg-bg px-4 pt-3"
+        style={{ paddingBottom: Math.max(insets.bottom, 12) }}
+      >
+        <Button title="Place order" loading={placeOrder.isPending} onPress={handleSubmit(onSubmit)} />
       </View>
     </SafeAreaView>
   );
