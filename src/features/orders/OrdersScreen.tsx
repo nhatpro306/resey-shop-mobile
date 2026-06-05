@@ -2,6 +2,7 @@ import React from "react";
 import { FlatList, RefreshControl, View, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
+import Feather from "@expo/vector-icons/Feather";
 import { useOrders } from "./hooks";
 import { useAuth } from "@/features/auth/AuthContext";
 import { Text } from "@/ui/Text";
@@ -9,6 +10,7 @@ import { Badge, orderStatusVariant } from "@/ui/Badge";
 import { EmptyState } from "@/ui/EmptyState";
 import { Skeleton } from "@/ui/Skeleton";
 import { formatVnd } from "@/lib/currency";
+import { tokens } from "@/config/theme";
 import type { OrderType } from "@/domain/types";
 
 export function OrdersScreen() {
@@ -41,7 +43,12 @@ export function OrdersScreen() {
         data={(orders ?? []) as OrderType[]}
         keyExtractor={(o) => String(o.id)}
         contentContainerClassName="gap-3 px-4 pt-4 pb-6"
-        ListHeaderComponent={<Text variant="h2" className="mb-1">Your orders</Text>}
+        ListHeaderComponent={
+          <View className="mb-1">
+            <Text variant="overline" className="text-muted">History</Text>
+            <Text variant="h1">Your orders</Text>
+          </View>
+        }
         ListEmptyComponent={
           <EmptyState
             title="No orders yet"
@@ -54,7 +61,7 @@ export function OrdersScreen() {
         renderItem={({ item: order }) => (
           <Pressable
             onPress={() => router.push(`/order/${order.id}` as any)}
-            className="rounded-lg bg-surface p-4 gap-2 active:opacity-80"
+            className="gap-2 bg-surface p-4 active:opacity-80"
             accessibilityRole="button"
             accessibilityLabel={`Order #${order.id}`}
           >
@@ -65,11 +72,14 @@ export function OrdersScreen() {
             <Text variant="caption" className="text-muted">
               {new Date(order.created_at).toLocaleDateString("vi-VN")}
             </Text>
-            <View className="flex-row justify-between">
+            <View className="flex-row items-center justify-between">
               <Text variant="caption">
                 {order.order_items?.length ?? 0} item(s)
               </Text>
-              <Text variant="small" className="font-bold text-primary">{formatVnd(order.total)}</Text>
+              <View className="flex-row items-center gap-1">
+                <Text variant="small" className="font-bold text-primary">{formatVnd(order.total)}</Text>
+                <Feather name="chevron-right" size={16} color={tokens.color.muted} />
+              </View>
             </View>
           </Pressable>
         )}
