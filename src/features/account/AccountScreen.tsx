@@ -3,12 +3,16 @@ import { View, ScrollView, Pressable, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { Image } from "expo-image";
+import Feather from "@expo/vector-icons/Feather";
 import { useProfile } from "./hooks";
 import { useAuth } from "@/features/auth/AuthContext";
 import { authService } from "@/domain/services/auth";
 import { Text } from "@/ui/Text";
 import { Button } from "@/ui/Button";
 import { EmptyState } from "@/ui/EmptyState";
+import { tokens } from "@/config/theme";
+
+type FeatherName = React.ComponentProps<typeof Feather>["name"];
 
 export function AccountScreen() {
   const { user, isAdmin } = useAuth();
@@ -40,15 +44,19 @@ export function AccountScreen() {
     ]);
   }
 
-  const sections = [
-    { label: "My orders", onPress: () => router.push("/(tabs)/orders") },
-    { label: "My addresses", onPress: () => router.push("/addresses" as any) },
-    ...(isAdmin ? [{ label: "Admin dashboard", onPress: () => router.push("/(admin)" as any) }] : []),
+  const sections: { label: string; icon: FeatherName; onPress: () => void }[] = [
+    { label: "My orders", icon: "package", onPress: () => router.push("/(tabs)/orders") },
+    { label: "My addresses", icon: "map-pin", onPress: () => router.push("/addresses" as any) },
+    ...(isAdmin
+      ? [{ label: "Admin dashboard", icon: "shield" as FeatherName, onPress: () => router.push("/(admin)" as any) }]
+      : []),
   ];
 
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={["top"]}>
       <ScrollView contentContainerClassName="gap-5 px-4 pt-4 pb-8">
+        <Text variant="overline" className="text-muted">Account</Text>
+
         {/* Profile header */}
         <View className="flex-row items-center gap-4">
           {profile?.avatar_url ? (
@@ -81,18 +89,19 @@ export function AccountScreen() {
         </View>
 
         {/* Menu */}
-        <View className="rounded-lg bg-surface overflow-hidden">
+        <View className="overflow-hidden bg-surface">
           {sections.map((s, i) => (
             <Pressable
               key={s.label}
               onPress={s.onPress}
-              className={`flex-row items-center justify-between px-4 py-4 active:opacity-70 ${
+              className={`flex-row items-center gap-3 px-4 py-4 active:opacity-70 ${
                 i < sections.length - 1 ? "border-b border-border" : ""
               }`}
               accessibilityRole="menuitem"
             >
-              <Text variant="small">{s.label}</Text>
-              <Text className="text-muted">›</Text>
+              <Feather name={s.icon} size={18} color={tokens.color.muted} />
+              <Text variant="small" className="flex-1">{s.label}</Text>
+              <Feather name="chevron-right" size={18} color={tokens.color.muted} />
             </Pressable>
           ))}
         </View>

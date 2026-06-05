@@ -47,7 +47,7 @@ export function OrderDetailScreen() {
 
         {/* Status timeline */}
         <View className="rounded-lg bg-surface p-4 gap-3">
-          <Text variant="small" className="font-semibold">Status</Text>
+          <Text variant="overline" className="text-muted">Status</Text>
           <View className="flex-row items-center gap-1">
             {STATUS_STEPS.map((step, i) => (
               <React.Fragment key={step}>
@@ -68,7 +68,7 @@ export function OrderDetailScreen() {
 
         {/* Items — rendered from snapshots */}
         <View className="rounded-lg bg-surface p-4 gap-3">
-          <Text variant="small" className="font-semibold">Items</Text>
+          <Text variant="overline" className="text-muted">Items</Text>
           {(order.order_items ?? []).map((item) => (
             <View key={item.id} className="flex-row justify-between gap-2">
               <View className="flex-1">
@@ -92,7 +92,7 @@ export function OrderDetailScreen() {
         {/* Address */}
         {order.shipping_address && (
           <View className="rounded-lg bg-surface p-4 gap-1">
-            <Text variant="small" className="font-semibold">Delivery to</Text>
+            <Text variant="overline" className="text-muted">Delivery to</Text>
             <Text variant="caption">{order.customer_name}</Text>
             <Text variant="caption">{order.customer_phone}</Text>
             <Text variant="caption">{order.shipping_address.street}, {order.shipping_address.city}</Text>
@@ -101,7 +101,7 @@ export function OrderDetailScreen() {
 
         {/* Payment */}
         <View className="rounded-lg bg-surface p-4 gap-2">
-          <Text variant="small" className="font-semibold">Payment</Text>
+          <Text variant="overline" className="text-muted">Payment</Text>
           <View className="flex-row justify-between">
             <Text variant="caption">Method</Text>
             <Text variant="caption">{order.payment_method === "cod" ? "Cash on delivery" : "Bank transfer"}</Text>
