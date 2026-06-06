@@ -1,19 +1,29 @@
 import React from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, router } from "expo-router";
+import Feather from "@expo/vector-icons/Feather";
 import { useOrder } from "./hooks";
 import { Text } from "@/ui/Text";
 import { Button } from "@/ui/Button";
 import { Badge, orderStatusVariant } from "@/ui/Badge";
 import { Skeleton } from "@/ui/Skeleton";
 import { formatVnd } from "@/lib/currency";
+import { useThemeColors } from "@/config/theme";
 
 const STATUS_STEPS = ["pending", "processing", "confirmed", "shipping", "delivered"];
+const STATUS_LABELS: Record<string, string> = {
+  pending: "Chờ xử lý",
+  processing: "Xử lý",
+  confirmed: "Xác nhận",
+  shipping: "Vận chuyển",
+  delivered: "Đã giao",
+};
 
 export function OrderDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data: order, isLoading, isError, refetch } = useOrder(id ? Number(id) : null);
+  const c = useThemeColors();
 
   if (isLoading) {
     return (
@@ -28,9 +38,9 @@ export function OrderDetailScreen() {
   if (isError || !order) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-bg gap-4">
-        <Text>Could not load order.</Text>
-        <Button title="Retry" onPress={() => refetch()} />
-        <Button title="Back" variant="ghost" onPress={() => router.back()} />
+        <Text>Không tải được đơn hàng.</Text>
+        <Button title="Thử lại" onPress={() => refetch()} />
+        <Button title="Quay lại" variant="ghost" onPress={() => router.back()} />
       </SafeAreaView>
     );
   }
@@ -38,17 +48,24 @@ export function OrderDetailScreen() {
   const stepIndex = STATUS_STEPS.indexOf(order.status);
 
   return (
-    <SafeAreaView className="flex-1 bg-bg">
+    <SafeAreaView className="flex-1 bg-bg" edges={["top", "bottom"]}>
+      {/* Header */}
+      <View className="flex-row items-center justify-between border-b border-border px-4 pb-3 pt-4">
+        <Pressable onPress={() => router.back()} hitSlop={8} className="h-9 w-9 items-center justify-center" accessibilityLabel="Quay lại">
+          <Feather name="chevron-left" size={24} color={c.fg} />
+        </Pressable>
+        <Text variant="h2" className="flex-1 pr-9 text-center text-base">Đơn hàng #{order.id}</Text>
+      </View>
+
       <ScrollView contentContainerClassName="gap-4 px-4 pt-4 pb-8">
-        <View className="flex-row items-center justify-between">
-          <Button title="← Back" variant="ghost" size="sm" onPress={() => router.back()} />
+        {/* Status badge */}
+        <View className="items-start">
           <Badge label={order.status} variant={orderStatusVariant(order.status)} />
         </View>
-        <Text variant="h2">Order #{order.id}</Text>
 
         {/* Status timeline */}
         <View className="rounded-lg bg-surface p-4 gap-3">
-          <Text variant="overline" className="text-muted">Status</Text>
+          <Text variant="overline" className="text-muted">Trạng thái</Text>
           <View className="flex-row items-center gap-1">
             {STATUS_STEPS.map((step, i) => (
               <React.Fragment key={step}>
@@ -60,8 +77,8 @@ export function OrderDetailScreen() {
           </View>
           <View className="flex-row justify-between">
             {STATUS_STEPS.map((step) => (
-              <Text key={step} variant="caption" className="text-muted capitalize" style={{ fontSize: 9 }}>
-                {step}
+              <Text key={step} variant="caption" className="text-muted" style={{ fontSize: 9 }}>
+                {STATUS_LABELS[step] ?? step}
               </Text>
             ))}
           </View>
@@ -69,12 +86,12 @@ export function OrderDetailScreen() {
 
         {/* Items — rendered from snapshots */}
         <View className="rounded-lg bg-surface p-4 gap-3">
-          <Text variant="overline" className="text-muted">Items</Text>
+          <Text variant="overline" className="text-muted">Sản phẩm</Text>
           {(order.order_items ?? []).map((item) => (
             <View key={item.id} className="flex-row justify-between gap-2">
               <View className="flex-1">
                 <Text variant="small" numberOfLines={2}>
-                  {item.product_title_snapshot ?? item.product?.title ?? "Product"}
+                  {item.product_title_snapshot ?? item.product?.title ?? "Sản phẩm"}
                 </Text>
                 {(item.size_snapshot || item.color_snapshot) && (
                   <Text variant="caption" className="text-muted">
@@ -93,7 +110,7 @@ export function OrderDetailScreen() {
         {/* Address */}
         {order.shipping_address && (
           <View className="rounded-lg bg-surface p-4 gap-1">
-            <Text variant="overline" className="text-muted">Delivery to</Text>
+            <Text variant="overline" className="text-muted">Giao đến</Text>
             <Text variant="caption">{order.customer_name}</Text>
             <Text variant="caption">{order.customer_phone}</Text>
             <Text variant="caption">{order.shipping_address.street}, {order.shipping_address.city}</Text>
@@ -102,18 +119,16 @@ export function OrderDetailScreen() {
 
         {/* Payment */}
         <View className="rounded-lg bg-surface p-4 gap-2">
-          <Text variant="overline" className="text-muted">Payment</Text>
+          <Text variant="overline" className="text-muted">Thanh toán</Text>
           <View className="flex-row justify-between">
-            <Text variant="caption">Method</Text>
-            <Text variant="caption">{order.payment_method === "cod" ? "Cash on delivery" : "Bank transfer"}</Text>
+            <Text variant="caption">Phương thức</Text>
+            <Text variant="caption">{order.payment_method === "cod" ? "Thanh toán khi nhận hàng" : "Chuyển khoản ngân hàng"}</Text>
           </View>
           <View className="flex-row justify-between border-t border-border pt-2">
-            <Text variant="small" className="font-bold">Total</Text>
+            <Text variant="small" className="font-bold">Tổng</Text>
             <Text variant="small" className="font-bold text-primary">{formatVnd(order.total)}</Text>
           </View>
         </View>
-
-        <Button title="Back to orders" variant="secondary" onPress={() => router.back()} />
       </ScrollView>
     </SafeAreaView>
   );

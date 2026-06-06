@@ -1,7 +1,9 @@
 import React, { useEffect } from "react";
-import { View, ScrollView, TextInput, Alert } from "react-native";
+import { View, ScrollView, TextInput, Alert, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
+import Feather from "@expo/vector-icons/Feather";
+import { useThemeColors } from "@/config/theme";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useStoreSettings, useUpdateStoreSettings } from "./hooks";
@@ -56,6 +58,7 @@ export function AdminSettingsScreen() {
   const { isAdmin } = useAuth();
   const { data: settings, isLoading } = useStoreSettings();
   const updateSettings = useUpdateStoreSettings();
+  const c = useThemeColors();
 
   const { control, handleSubmit, reset } = useForm<StoreSettingsInput>({
     resolver: zodResolver(storeSettingsSchema),
@@ -111,9 +114,15 @@ export function AdminSettingsScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-bg" edges={["bottom"]}>
+    <SafeAreaView className="flex-1 bg-bg" edges={["top", "bottom"]}>
+      <View className="flex-row items-center border-b border-border px-4 pb-3 pt-4">
+        <Pressable onPress={() => router.back()} hitSlop={8} className="h-9 w-9 items-center justify-center" accessibilityLabel="Back">
+          <Feather name="chevron-left" size={24} color={c.fg} />
+        </Pressable>
+        <Text variant="h2" className="flex-1 text-center text-base">Store settings</Text>
+        <View className="w-9" />
+      </View>
       <ScrollView contentContainerClassName="gap-5 px-4 pt-4 pb-6" keyboardShouldPersistTaps="handled">
-        <Text variant="h2">Store settings</Text>
 
         {SECTIONS.map((section) => (
           <View key={section.title} className="gap-3">

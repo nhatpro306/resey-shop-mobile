@@ -105,9 +105,12 @@ export function AdminProductFormScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-bg" edges={["bottom"]}>
+    <SafeAreaView className="flex-1 bg-bg" edges={["top", "bottom"]}>
+      <View className="flex-row items-center justify-between border-b border-border px-4 pb-3 pt-4">
+        <Text variant="h2" className="text-base">{isEdit ? "Edit product" : "New product"}</Text>
+        <Button title="Cancel" variant="ghost" size="sm" onPress={() => router.back()} />
+      </View>
       <ScrollView contentContainerClassName="gap-4 px-4 pt-4 pb-6" keyboardShouldPersistTaps="handled">
-        <Text variant="h2">{isEdit ? "Edit product" : "New product"}</Text>
 
         {TEXT_FIELDS.map(({ name, label, keyboard, multiline }) => (
           <View key={name} className="gap-1">

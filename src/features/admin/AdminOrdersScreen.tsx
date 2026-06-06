@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { View, FlatList, Pressable, RefreshControl, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
+import { useThemeColors } from "@/config/theme";
+import Feather from "@expo/vector-icons/Feather";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminListOrders, adminUpdateOrderStatus } from "@/domain/services/admin/order";
 import { Text } from "@/ui/Text";
@@ -33,6 +35,7 @@ export function AdminOrdersScreen() {
   const qc = useQueryClient();
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
+  const c = useThemeColors();
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["admin-orders", statusFilter, page],
@@ -65,8 +68,14 @@ export function AdminOrdersScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={["top"]}>
-      <View className="px-4 pt-4 pb-2">
-        <Text variant="h2" className="mb-2">Orders</Text>
+      <View className="flex-row items-center border-b border-border px-4 pb-3 pt-4">
+        <Pressable onPress={() => router.back()} hitSlop={8} className="h-9 w-9 items-center justify-center" accessibilityLabel="Back">
+          <Feather name="chevron-left" size={24} color={c.fg} />
+        </Pressable>
+        <Text variant="h2" className="flex-1 text-center text-base">Orders</Text>
+        <View className="w-9" />
+      </View>
+      <View className="px-4 pt-3 pb-2">
         <FlatList
           horizontal
           showsHorizontalScrollIndicator={false}

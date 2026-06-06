@@ -12,11 +12,11 @@ import { Button } from "@/ui/Button";
 import type { AppError } from "@/domain/errors";
 
 const FIELDS: { name: keyof AddressInput; label: string }[] = [
-  { name: "street", label: "Street address" },
-  { name: "city", label: "City" },
-  { name: "state", label: "State / Province (optional)" },
-  { name: "zip_code", label: "Zip / Postal code (optional)" },
-  { name: "country", label: "Country" },
+  { name: "street", label: "Địa chỉ đường phố" },
+  { name: "city", label: "Thành phố" },
+  { name: "state", label: "Tỉnh / Thành (tuỳ chọn)" },
+  { name: "zip_code", label: "Mã bưu điện (tuỳ chọn)" },
+  { name: "country", label: "Quốc gia" },
 ];
 
 export function AddressFormScreen() {
@@ -60,7 +60,7 @@ export function AddressFormScreen() {
       }
       router.back();
     } catch (e) {
-      Alert.alert("Error", (e as AppError).message);
+      Alert.alert("Lỗi", (e as AppError).message);
     }
   }
 
@@ -68,8 +68,8 @@ export function AddressFormScreen() {
     <SafeAreaView className="flex-1 bg-bg" edges={["bottom"]}>
       <ScrollView contentContainerClassName="gap-4 px-4 pt-4 pb-6" keyboardShouldPersistTaps="handled">
         <View className="flex-row items-center justify-between">
-          <Text variant="h2">{isEdit ? "Edit address" : "Add address"}</Text>
-          <Button title="Cancel" variant="ghost" size="sm" onPress={() => router.back()} />
+          <Text variant="h2">{isEdit ? "Sửa địa chỉ" : "Thêm địa chỉ"}</Text>
+          <Button title="Huỷ" variant="ghost" size="sm" onPress={() => router.back()} />
         </View>
 
         {FIELDS.map(({ name, label }) => (
@@ -101,13 +101,13 @@ export function AddressFormScreen() {
           <View className={`h-5 w-5 items-center justify-center rounded border ${isDefault ? "border-primary bg-primary" : "border-border"}`}>
             {isDefault && <Text className="text-primary-fg text-xs">✓</Text>}
           </View>
-          <Text variant="small">Set as default address</Text>
+          <Text variant="small">Đặt làm địa chỉ mặc định</Text>
         </Pressable>
       </ScrollView>
 
       <View className="border-t border-border bg-bg px-4 py-3">
         <Button
-          title={isEdit ? "Save changes" : "Add address"}
+          title={isEdit ? "Lưu thay đổi" : "Thêm địa chỉ"}
           loading={saveAddr.isPending || updateAddr.isPending}
           onPress={handleSubmit(onSubmit)}
         />
