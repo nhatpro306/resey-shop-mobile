@@ -12,7 +12,7 @@ interface InputProps extends Omit<TextInputProps, "secureTextEntry"> {
   containerClassName?: string;
 }
 
-export function Input({ label, error, password, containerClassName, onFocus, onBlur, ...props }: InputProps) {
+export function Input({ label, error, password, containerClassName, onFocus, onBlur, accessibilityLabel, ...props }: InputProps) {
   const [focused, setFocused] = useState(false);
   const [hidden, setHidden] = useState(!!password);
 
@@ -30,6 +30,7 @@ export function Input({ label, error, password, containerClassName, onFocus, onB
           className="flex-1 text-text"
           placeholderTextColor={tokens.color.muted}
           secureTextEntry={password ? hidden : false}
+          accessibilityLabel={accessibilityLabel ?? label}
           onFocus={(e) => { setFocused(true); onFocus?.(e); }}
           onBlur={(e) => { setFocused(false); onBlur?.(e); }}
           {...props}

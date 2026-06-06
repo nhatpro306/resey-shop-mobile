@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, TextInput, Alert } from "react-native";
+import { View, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useForm, Controller } from "react-hook-form";
@@ -8,6 +8,7 @@ import { authService } from "@/domain/services/auth";
 import { forgotPasswordSchema, type ForgotPasswordInput } from "./schemas";
 import { Text } from "@/ui/Text";
 import { Button } from "@/ui/Button";
+import { Input } from "@/ui/Input";
 
 export function ForgotPasswordScreen() {
   const [loading, setLoading] = useState(false);
@@ -37,25 +38,23 @@ export function ForgotPasswordScreen() {
           <Text variant="small">We&apos;ll send a reset link to your email.</Text>
         </View>
 
-        <View className="gap-1">
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                className="h-12 rounded-md border border-border bg-surface px-4 text-text"
-                placeholder="Email"
-                placeholderTextColor="#A1A1AA"
-                autoCapitalize="none"
-                keyboardType="email-address"
-                value={value}
-                onChangeText={onChange}
-                accessibilityLabel="Email"
-              />
-            )}
-          />
-          {errors.email && <Text variant="caption" className="text-danger">{errors.email.message}</Text>}
-        </View>
+        <Controller
+          control={control}
+          name="email"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              label="Email"
+              placeholder="you@email.com"
+              autoCapitalize="none"
+              keyboardType="email-address"
+              autoComplete="email"
+              textContentType="emailAddress"
+              value={value}
+              onChangeText={onChange}
+              error={errors.email?.message}
+            />
+          )}
+        />
 
         <Button title="Send reset link" loading={loading} onPress={handleSubmit(onSubmit)} />
         <Button title="Back" variant="ghost" onPress={() => router.back()} />

@@ -251,7 +251,8 @@ export function ProductDetailScreen() {
                         out && "opacity-50",
                       )}
                       accessibilityRole="button"
-                      accessibilityLabel={`Size ${s}`}
+                      accessibilityLabel={`Size ${s}${out ? ", hết hàng" : ""}`}
+                      accessibilityState={{ disabled: out, selected: on }}
                     >
                       <Text className={cn("text-[13px] font-bold", on ? "text-ink-fg" : out ? "text-fg-faint line-through" : "text-fg")}>{s}</Text>
                     </Pressable>

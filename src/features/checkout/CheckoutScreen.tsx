@@ -123,10 +123,17 @@ export function CheckoutScreen() {
           </Pressable>
           <Text variant="h2" className="flex-1 pr-9 text-center text-base">Thanh toán</Text>
         </View>
-        <View className="flex-row items-center">
+        <View
+          className="flex-row items-center"
+          accessibilityRole="progressbar"
+          accessibilityLabel={`Bước ${step + 1} trong ${STEPS.length}: ${STEPS[step]}`}
+        >
           {STEPS.map((s, i) => (
             <React.Fragment key={s}>
-              <View className="items-center gap-1.5">
+              <View
+                className="items-center gap-1.5"
+                accessibilityLabel={i < step ? `${s}: đã hoàn thành` : i === step ? `${s}: đang thực hiện` : `${s}: chưa tới`}
+              >
                 <View className={cn("h-[30px] w-[30px] items-center justify-center rounded-full border", i <= step ? "border-ink bg-ink" : "border-border bg-surface")}>
                   {i < step ? <Feather name="check" size={15} color={c.onInk} /> : <Text className={cn("text-xs font-extrabold", i <= step ? "text-ink-fg" : "text-fg-faint")}>{i + 1}</Text>}
                 </View>

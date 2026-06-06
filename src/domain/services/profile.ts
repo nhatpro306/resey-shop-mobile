@@ -2,10 +2,12 @@ import { supabase } from "@/data/supabase";
 import { mapSupabaseError } from "@/domain/errors";
 import type { ProfileType } from "@/domain/types";
 
+const PROFILE_COLS = "profile_id, username, avatar_url, email, role, is_active, created_at, updated_at";
+
 export async function getProfile(userId: string): Promise<ProfileType | null> {
   const { data, error } = await supabase
     .from("profiles")
-    .select("*")
+    .select(PROFILE_COLS)
     .eq("profile_id", userId)
     .maybeSingle();
   if (error) throw mapSupabaseError(error);
@@ -20,7 +22,7 @@ export async function updateProfile(
     .from("profiles")
     .update({ ...fields, updated_at: new Date().toISOString() })
     .eq("profile_id", userId)
-    .select()
+    .select(PROFILE_COLS)
     .single();
   if (error) throw mapSupabaseError(error);
   return data as ProfileType;
