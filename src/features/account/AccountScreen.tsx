@@ -6,107 +6,92 @@ import { Image } from "expo-image";
 import Feather from "@expo/vector-icons/Feather";
 import { useProfile } from "./hooks";
 import { useAuth } from "@/features/auth/AuthContext";
+import { useTheme } from "@/features/theme/ThemeProvider";
 import { authService } from "@/domain/services/auth";
 import { Text } from "@/ui/Text";
 import { Button } from "@/ui/Button";
 import { EmptyState } from "@/ui/EmptyState";
-import { tokens } from "@/config/theme";
+import { useThemeColors } from "@/config/theme";
 
 type FeatherName = React.ComponentProps<typeof Feather>["name"];
 
 export function AccountScreen() {
   const { user, isAdmin } = useAuth();
   const { data: profile } = useProfile(user?.id ?? null);
+  const { mode, toggle } = useTheme();
+  const c = useThemeColors();
 
   if (!user) {
     return (
-      <SafeAreaView className="flex-1 bg-bg">
-        <EmptyState
-          title="Sign in to your account"
-          actionLabel="Sign in"
-          onAction={() => router.push("/(auth)/login")}
-        />
+      <SafeAreaView className="flex-1 bg-bg" edges={["top"]}>
+        <EmptyState title="Đăng nhập vào tài khoản" actionLabel="Đăng nhập" onAction={() => router.push("/(auth)/login")} />
       </SafeAreaView>
     );
   }
 
   async function handleSignOut() {
-    Alert.alert("Sign out", "Are you sure?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Sign out",
-        style: "destructive",
-        onPress: async () => {
-          await authService.signOut();
-          router.replace("/(auth)/login");
-        },
-      },
+    Alert.alert("Đăng xuất", "Bạn chắc chắn?", [
+      { text: "Huỷ", style: "cancel" },
+      { text: "Đăng xuất", style: "destructive", onPress: async () => { await authService.signOut(); router.replace("/(auth)/login"); } },
     ]);
   }
 
-  const sections: { label: string; icon: FeatherName; onPress: () => void }[] = [
-    { label: "My orders", icon: "package", onPress: () => router.push("/(tabs)/orders") },
-    { label: "My addresses", icon: "map-pin", onPress: () => router.push("/addresses" as any) },
-    ...(isAdmin
-      ? [{ label: "Admin dashboard", icon: "shield" as FeatherName, onPress: () => router.push("/(admin)" as any) }]
-      : []),
+  const menu: { label: string; icon: FeatherName; onPress: () => void }[] = [
+    { label: "Đơn hàng của tôi", icon: "package", onPress: () => router.push("/(tabs)/orders") },
+    { label: "Sổ địa chỉ", icon: "map-pin", onPress: () => router.push("/addresses" as any) },
+    ...(isAdmin ? [{ label: "Quản trị", icon: "shield" as FeatherName, onPress: () => router.push("/(admin)" as any) }] : []),
   ];
 
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={["top"]}>
-      <ScrollView contentContainerClassName="gap-5 px-4 pt-4 pb-8">
-        <Text variant="overline" className="text-muted">Account</Text>
+      <ScrollView contentContainerClassName="gap-6 px-4 pb-10 pt-4">
+        <Text variant="eyebrow">Tài khoản</Text>
 
         {/* Profile header */}
         <View className="flex-row items-center gap-4">
           {profile?.avatar_url ? (
-            <Image
-              source={profile.avatar_url}
-              style={{ width: 64, height: 64, borderRadius: 32 }}
-              contentFit="cover"
-              cachePolicy="memory-disk"
-            />
+            <Image source={profile.avatar_url} style={{ width: 64, height: 64, borderRadius: 32 }} contentFit="cover" cachePolicy="memory-disk" />
           ) : (
-            <View className="h-16 w-16 items-center justify-center rounded-full bg-surface">
-              <Text variant="h2">{(profile?.username ?? user.email ?? "?")[0]?.toUpperCase()}</Text>
+            <View className="h-16 w-16 items-center justify-center rounded-full bg-surface-sunken">
+              <Text variant="h2" className="text-xl">{(profile?.username ?? user.email ?? "?")[0]?.toUpperCase()}</Text>
             </View>
           )}
           <View className="flex-1 gap-0.5">
-            <Text variant="body" className="font-semibold">
-              {profile?.username ?? "User"}
-            </Text>
-            <Text variant="small" className="text-muted">{user.email}</Text>
-            {isAdmin && (
-              <Text variant="caption" className="text-primary font-semibold">Admin</Text>
-            )}
+            <Text className="text-base font-bold text-fg">{profile?.username ?? "Thành viên"}</Text>
+            <Text className="text-sm text-fg-subtle">{user.email}</Text>
+            {isAdmin ? <Text className="text-[11px] font-bold uppercase tracking-[0.1em] text-accent">Quản trị viên</Text> : null}
           </View>
-          <Button
-            title="Edit"
-            variant="secondary"
-            className="h-8 px-3"
-            onPress={() => router.push("/edit-profile" as any)}
-          />
+          <Button title="Sửa" variant="soft" size="sm" onPress={() => router.push("/edit-profile" as any)} />
         </View>
 
         {/* Menu */}
-        <View className="overflow-hidden bg-surface">
-          {sections.map((s, i) => (
+        <View className="overflow-hidden border border-border">
+          {menu.map((s, i) => (
             <Pressable
               key={s.label}
               onPress={s.onPress}
-              className={`flex-row items-center gap-3 px-4 py-4 active:opacity-70 ${
-                i < sections.length - 1 ? "border-b border-border" : ""
-              }`}
+              className={`flex-row items-center gap-3 px-4 py-4 active:opacity-70 ${i < menu.length - 1 ? "border-b border-border" : ""}`}
               accessibilityRole="menuitem"
             >
-              <Feather name={s.icon} size={18} color={tokens.color.muted} />
-              <Text variant="small" className="flex-1">{s.label}</Text>
-              <Feather name="chevron-right" size={18} color={tokens.color.muted} />
+              <Feather name={s.icon} size={18} color={c.fgSubtle} />
+              <Text className="flex-1 text-sm text-fg">{s.label}</Text>
+              <Feather name="chevron-right" size={18} color={c.fgSubtle} />
             </Pressable>
           ))}
         </View>
 
-        <Button title="Sign out" variant="destructive" onPress={handleSignOut} />
+        {/* Appearance */}
+        <View className="border border-border">
+          <Pressable onPress={toggle} className="flex-row items-center gap-3 px-4 py-4 active:opacity-70" accessibilityRole="switch" accessibilityState={{ checked: mode === "dark" }}>
+            <Feather name={mode === "dark" ? "moon" : "sun"} size={18} color={c.fgSubtle} />
+            <Text className="flex-1 text-sm text-fg">Giao diện tối</Text>
+            <View className={`h-6 w-11 justify-center rounded-full px-0.5 ${mode === "dark" ? "bg-accent" : "bg-border"}`}>
+              <View className={`h-5 w-5 rounded-full bg-white ${mode === "dark" ? "self-end" : "self-start"}`} />
+            </View>
+          </Pressable>
+        </View>
+
+        <Button title="Đăng xuất" variant="outline" full icon="log-out" onPress={handleSignOut} />
       </ScrollView>
     </SafeAreaView>
   );
