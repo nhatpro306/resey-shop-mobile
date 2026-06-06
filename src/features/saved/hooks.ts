@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import * as Haptics from "expo-haptics";
 import { getWishlistIds, getWishlistProducts, addWishlist, removeWishlist } from "@/domain/services/wishlist";
 
 const idsKey = (u: string | null) => ["wishlist", "ids", u];
@@ -22,6 +23,7 @@ export function useWishlist(userId: string | null) {
       else await addWishlist(userId, productId);
     },
     onMutate: async (productId: string) => {
+      Haptics.selectionAsync().catch(() => {});
       await qc.cancelQueries({ queryKey: idsKey(userId) });
       const prev = qc.getQueryData<string[]>(idsKey(userId)) ?? [];
       const next = prev.includes(productId) ? prev.filter((x) => x !== productId) : [...prev, productId];
