@@ -20,11 +20,11 @@ export function ForgotPasswordScreen() {
     setLoading(true);
     try {
       await authService.resetPassword(data.email);
-      Alert.alert("Email sent", "Check your inbox for the reset link.", [
+      Alert.alert("Đã gửi email", "Vui lòng kiểm tra hộp thư để nhận liên kết đặt lại mật khẩu.", [
         { text: "OK", onPress: () => router.back() },
       ]);
     } catch {
-      Alert.alert("Error", "Could not send reset email. Please try again.");
+      Alert.alert("Lỗi", "Không gửi được email đặt lại. Vui lòng thử lại.");
     } finally {
       setLoading(false);
     }
@@ -34,8 +34,8 @@ export function ForgotPasswordScreen() {
     <SafeAreaView className="flex-1 bg-bg px-6">
       <View className="flex-1 justify-center gap-6">
         <View className="gap-1">
-          <Text variant="h1">Forgot password</Text>
-          <Text variant="small">We&apos;ll send a reset link to your email.</Text>
+          <Text variant="h1">Quên mật khẩu</Text>
+          <Text variant="small">Chúng tôi sẽ gửi liên kết đặt lại đến email của bạn.</Text>
         </View>
 
         <Controller
@@ -56,8 +56,8 @@ export function ForgotPasswordScreen() {
           )}
         />
 
-        <Button title="Send reset link" loading={loading} onPress={handleSubmit(onSubmit)} />
-        <Button title="Back" variant="ghost" onPress={() => router.back()} />
+        <Button title="Gửi liên kết đặt lại" loading={loading} onPress={handleSubmit(onSubmit)} />
+        <Button title="Quay lại" variant="ghost" onPress={() => router.back()} />
       </View>
     </SafeAreaView>
   );

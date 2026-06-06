@@ -107,7 +107,7 @@ export function CartScreen() {
         }
         renderItem={({ item }) => (
           <View className="mx-4 flex-row gap-3.5 border-b border-border py-4">
-            <Pressable onPress={() => item.product?.slug && router.push(`/product/${item.product.slug}` as any)} className="bg-img-bg" style={{ width: 86, height: 110 }}>
+            <Pressable onPress={() => item.product?.slug && router.push(`/product/${item.product.slug}` as any)} className="bg-img-bg" style={{ width: 86, height: 110 }} accessibilityRole="button" accessibilityLabel={`Xem ${item.product?.title ?? "sản phẩm"}`}>
               {item.product?.image ? (
                 <Image source={getResizedImageUrl(item.product.image, 200)} style={{ width: "100%", height: "100%" }} contentFit="cover" cachePolicy="memory-disk" />
               ) : null}
@@ -115,7 +115,7 @@ export function CartScreen() {
             <View className="flex-1">
               <View className="flex-row justify-between gap-2">
                 <Text variant="cardtitle" className="flex-1 text-[12.5px]" numberOfLines={2}>{item.product?.title ?? "Sản phẩm"}</Text>
-                <Pressable onPress={() => Alert.alert("Xoá sản phẩm?", "", [{ text: "Huỷ", style: "cancel" }, { text: "Xoá", style: "destructive", onPress: () => removeItem.mutate(item.id) }])} hitSlop={8}>
+                <Pressable onPress={() => Alert.alert("Xoá sản phẩm?", "", [{ text: "Huỷ", style: "cancel" }, { text: "Xoá", style: "destructive", onPress: () => removeItem.mutate(item.id) }])} hitSlop={8} accessibilityRole="button" accessibilityLabel="Xoá sản phẩm khỏi giỏ">
                   <Feather name="trash-2" size={16} color={c.fgSubtle} />
                 </Pressable>
               </View>

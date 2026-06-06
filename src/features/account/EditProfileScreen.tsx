@@ -11,10 +11,12 @@ import { useAuth } from "@/features/auth/AuthContext";
 import { profileSchema, type ProfileInput } from "./schemas";
 import { Text } from "@/ui/Text";
 import { Button } from "@/ui/Button";
+import { useThemeColors } from "@/config/theme";
 import type { AppError } from "@/domain/errors";
 
 export function EditProfileScreen() {
   const { user } = useAuth();
+  const c = useThemeColors();
   const { data: profile } = useProfile(user?.id ?? null);
   const updateProfile = useUpdateProfile(user?.id ?? "");
   const uploadAvatar = useUploadAvatar(user?.id ?? "");
@@ -99,7 +101,7 @@ export function EditProfileScreen() {
               <TextInput
                 className="h-12 rounded-md border border-border bg-surface px-4 text-text text-sm"
                 placeholder="Tên của bạn"
-                placeholderTextColor="#A1A1AA"
+                placeholderTextColor={c.fgSubtle}
                 value={value}
                 onChangeText={onChange}
                 accessibilityLabel="Tên hiển thị"

@@ -9,6 +9,7 @@ import { useAuth } from "@/features/auth/AuthContext";
 import { addressSchema, type AddressInput } from "./schemas";
 import { Text } from "@/ui/Text";
 import { Button } from "@/ui/Button";
+import { useThemeColors } from "@/config/theme";
 import type { AppError } from "@/domain/errors";
 
 const FIELDS: { name: keyof AddressInput; label: string }[] = [
@@ -21,6 +22,7 @@ const FIELDS: { name: keyof AddressInput; label: string }[] = [
 
 export function AddressFormScreen() {
   const { user } = useAuth();
+  const c = useThemeColors();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const isEdit = !!id;
 
@@ -81,7 +83,7 @@ export function AddressFormScreen() {
                 <TextInput
                   className="h-12 rounded-md border border-border bg-surface px-4 text-text text-sm"
                   placeholder={label}
-                  placeholderTextColor="#A1A1AA"
+                  placeholderTextColor={c.fgSubtle}
                   value={(value as string) ?? ""}
                   onChangeText={onChange}
                   accessibilityLabel={label}

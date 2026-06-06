@@ -19,6 +19,10 @@ const STATUS_LABELS: Record<string, string> = {
   shipping: "Vận chuyển",
   delivered: "Đã giao",
 };
+const STATUS_BADGE_VI: Record<string, string> = {
+  pending: "Chờ xác nhận", processing: "Đang đóng gói", confirmed: "Đã xác nhận",
+  shipped: "Đang giao", shipping: "Đang giao", delivered: "Hoàn thành", completed: "Hoàn thành", cancelled: "Đã huỷ",
+};
 
 export function OrderDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -60,7 +64,7 @@ export function OrderDetailScreen() {
       <ScrollView contentContainerClassName="gap-4 px-4 pt-4 pb-8">
         {/* Status badge */}
         <View className="items-start">
-          <Badge label={order.status} variant={orderStatusVariant(order.status)} />
+          <Badge label={STATUS_BADGE_VI[order.status] ?? order.status} variant={orderStatusVariant(order.status)} />
         </View>
 
         {/* Status timeline */}

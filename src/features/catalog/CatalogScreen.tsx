@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { View, TextInput, Pressable, FlatList, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { FlashList } from "@shopify/flash-list";
 import Feather from "@expo/vector-icons/Feather";
 import { useProducts, useCategories } from "./hooks";
@@ -40,7 +40,11 @@ export function CatalogScreen() {
   const c = useThemeColors();
   const { user } = useAuth();
   const wishlist = useWishlist(user?.id ?? null);
-  const [filters, setFilters] = useState<ProductFilters>({});
+  const { category } = useLocalSearchParams<{ category?: string }>();
+  const initialCategoryId = category ? Number(category) : undefined;
+  const [filters, setFilters] = useState<ProductFilters>(
+    initialCategoryId && !Number.isNaN(initialCategoryId) ? { categoryId: initialCategoryId } : {},
+  );
   const [search, setSearch] = useState("");
   const [sheet, setSheet] = useState(false);
 

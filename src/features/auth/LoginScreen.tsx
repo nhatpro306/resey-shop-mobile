@@ -26,7 +26,7 @@ export function LoginScreen() {
       router.replace("/(tabs)");
     } catch (e) {
       const err = e as AppError;
-      Alert.alert("Sign in failed", err.message ?? "Please try again.");
+      Alert.alert("Đăng nhập thất bại", err.message ?? "Vui lòng thử lại.");
     } finally {
       setLoading(false);
     }
@@ -38,8 +38,8 @@ export function LoginScreen() {
         <View className="gap-6">
           <BrandMark />
           <View className="gap-1">
-            <Text variant="h1">Sign in</Text>
-            <Text variant="small">Welcome back to RESEY</Text>
+            <Text variant="h1">Đăng nhập</Text>
+            <Text variant="small">Chào mừng bạn quay lại RESEY</Text>
           </View>
         </View>
 
@@ -66,7 +66,7 @@ export function LoginScreen() {
             name="password"
             render={({ field: { onChange, value } }) => (
               <Input
-                label="Password"
+                label="Mật khẩu"
                 placeholder="••••••••"
                 password
                 autoComplete="current-password"
@@ -83,16 +83,16 @@ export function LoginScreen() {
             className="self-end"
             accessibilityRole="link"
           >
-            <Text variant="small" className="text-primary">Forgot password?</Text>
+            <Text variant="small" className="text-primary">Quên mật khẩu?</Text>
           </Pressable>
         </View>
 
         <View className="gap-4">
-          <Button title="Sign in" loading={loading} onPress={handleSubmit(onSubmit)} />
+          <Button title="Đăng nhập" loading={loading} onPress={handleSubmit(onSubmit)} />
           <View className="flex-row justify-center gap-2">
-            <Text variant="small">No account?</Text>
+            <Text variant="small">Chưa có tài khoản?</Text>
             <Pressable onPress={() => router.push("/(auth)/register")} accessibilityRole="link">
-              <Text variant="small" className="text-primary font-semibold">Register</Text>
+              <Text variant="small" className="text-primary font-semibold">Đăng ký</Text>
             </Pressable>
           </View>
         </View>
