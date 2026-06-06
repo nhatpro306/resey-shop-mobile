@@ -53,16 +53,12 @@ export function CheckoutScreen() {
   const placeOrder = usePlaceOrder(user?.id ?? null);
 
   const [step, setStep] = useState(0);
-  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
-
-  // Sync default address once the query resolves (addresses may not be cached on first render).
-  React.useEffect(() => {
-    if (!addresses?.length) return;
-    setSelectedAddressId((prev) => {
-      if (prev !== null) return prev;
-      return addresses.find((a) => a.is_default)?.id ?? addresses[0]?.id ?? null;
-    });
-  }, [addresses]);
+  // Track only explicit user selections; derive fallback from query data so the
+  // default address is pre-selected as soon as the query resolves without
+  // triggering a setState-in-effect lint error.
+  const [manualAddressId, setManualAddressId] = useState<number | null>(null);
+  const selectedAddressId =
+    manualAddressId ?? addresses?.find((a) => a.is_default)?.id ?? addresses?.[0]?.id ?? null;
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cod");
 
   const items = cart?.cart_items ?? [];
@@ -174,7 +170,7 @@ export function CheckoutScreen() {
                 <Button title="Thêm địa chỉ" variant="soft" full onPress={() => router.push("/add-address" as any)} />
               ) : (
                 (addresses ?? []).map((a) => (
-                  <SelectRow key={a.id} selected={selectedAddressId === a.id} onPress={() => setSelectedAddressId(a.id)}>
+                  <SelectRow key={a.id} selected={selectedAddressId === a.id} onPress={() => setManualAddressId(a.id)}>
                     <Text className="text-sm text-fg">{a.street}, {a.city}</Text>
                     {a.state ? <Text className="text-xs text-fg-subtle">{a.state}, {a.country}</Text> : null}
                   </SelectRow>
