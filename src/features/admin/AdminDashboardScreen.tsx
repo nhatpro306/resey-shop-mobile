@@ -1,7 +1,8 @@
 import React from "react";
-import { View, ScrollView, RefreshControl } from "react-native";
+import { View, ScrollView, RefreshControl, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
+import Feather from "@expo/vector-icons/Feather";
 import { useQuery } from "@tanstack/react-query";
 import { adminGetDashboard } from "@/domain/services/admin/order";
 import { adminGetProductAnalytics } from "@/domain/services/admin/product";
@@ -12,6 +13,7 @@ import { Badge, orderStatusVariant } from "@/ui/Badge";
 import { Skeleton } from "@/ui/Skeleton";
 import { EmptyState } from "@/ui/EmptyState";
 import { formatVnd } from "@/lib/currency";
+import { useThemeColors } from "@/config/theme";
 
 function KpiCard({ label, value }: { label: string; value: string | number }) {
   return (
@@ -24,6 +26,7 @@ function KpiCard({ label, value }: { label: string; value: string | number }) {
 
 export function AdminDashboardScreen() {
   const { isAdmin } = useAuth();
+  const c = useThemeColors();
 
   const { data: dash, isLoading: dashLoading, refetch } = useQuery({
     queryKey: ["admin-dashboard"],
@@ -49,11 +52,17 @@ export function AdminDashboardScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={["top"]}>
+      <View className="flex-row items-center border-b border-border px-4 pb-3 pt-4">
+        <Pressable onPress={() => router.back()} hitSlop={8} className="h-9 w-9 items-center justify-center" accessibilityLabel="Back">
+          <Feather name="chevron-left" size={24} color={c.fg} />
+        </Pressable>
+        <Text variant="h2" className="flex-1 text-center text-base">Quản trị</Text>
+        <View className="w-9" />
+      </View>
       <ScrollView
         contentContainerClassName="gap-4 px-4 pt-4 pb-8"
         refreshControl={<RefreshControl refreshing={false} onRefresh={refetch} tintColor="#FAFAFA" />}
       >
-        <Text variant="h1">Admin</Text>
 
         {/* KPI row */}
         {isLoading ? (
@@ -99,9 +108,15 @@ export function AdminDashboardScreen() {
           <View className="gap-2">
             <Text variant="small" className="font-semibold">Recent orders</Text>
             {dash!.recentOrders.map((o) => (
-              <View key={o.id} className="rounded-lg bg-surface px-4 py-3 flex-row justify-between items-center">
+              <Pressable
+                key={o.id}
+                onPress={() => router.push(`/order/${o.id}` as any)}
+                className="rounded-lg bg-surface px-4 py-3 flex-row justify-between items-center active:opacity-70"
+                accessibilityRole="button"
+                accessibilityLabel={`Order #${o.id}`}
+              >
                 <View>
-                  <Text variant="small">#{o.id} — {o.customer_name ?? "Customer"}</Text>
+                  <Text variant="small">#{o.id} — {o.customer_name ?? "Khách hàng"}</Text>
                   <Text variant="caption" className="text-muted">
                     {new Date(o.created_at).toLocaleDateString("vi-VN")}
                   </Text>
@@ -110,7 +125,7 @@ export function AdminDashboardScreen() {
                   <Badge label={o.status} variant={orderStatusVariant(o.status)} />
                   <Text variant="caption" className="text-primary font-semibold">{formatVnd(o.total)}</Text>
                 </View>
-              </View>
+              </Pressable>
             ))}
           </View>
         )}

@@ -2,10 +2,12 @@ import { supabase } from "@/data/supabase";
 import { mapSupabaseError } from "@/domain/errors";
 import type { AddressType } from "@/domain/types";
 
+const ADDRESS_COLS = "id, user_id, street, city, state, zip_code, country, is_default, created_at";
+
 export async function getAddresses(userId: string): Promise<AddressType[]> {
   const { data, error } = await supabase
     .from("addresses")
-    .select("*")
+    .select(ADDRESS_COLS)
     .eq("user_id", userId)
     .order("is_default", { ascending: false })
     .order("created_at", { ascending: false });
@@ -20,7 +22,7 @@ export async function saveAddress(
   const { data, error } = await supabase
     .from("addresses")
     .insert({ ...address, user_id: userId })
-    .select()
+    .select(ADDRESS_COLS)
     .single();
   if (error) throw mapSupabaseError(error);
   return data as AddressType;
@@ -34,7 +36,7 @@ export async function updateAddress(
     .from("addresses")
     .update(fields)
     .eq("id", addressId)
-    .select()
+    .select(ADDRESS_COLS)
     .single();
   if (error) throw mapSupabaseError(error);
   return data as AddressType;

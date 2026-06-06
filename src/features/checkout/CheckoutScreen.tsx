@@ -53,9 +53,12 @@ export function CheckoutScreen() {
   const placeOrder = usePlaceOrder(user?.id ?? null);
 
   const [step, setStep] = useState(0);
-  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
-    addresses?.find((a) => a.is_default)?.id ?? addresses?.[0]?.id ?? null,
-  );
+  // Track only explicit user selections; derive fallback from query data so the
+  // default address is pre-selected as soon as the query resolves without
+  // triggering a setState-in-effect lint error.
+  const [manualAddressId, setManualAddressId] = useState<number | null>(null);
+  const selectedAddressId =
+    manualAddressId ?? addresses?.find((a) => a.is_default)?.id ?? addresses?.[0]?.id ?? null;
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cod");
 
   const items = cart?.cart_items ?? [];
@@ -123,10 +126,17 @@ export function CheckoutScreen() {
           </Pressable>
           <Text variant="h2" className="flex-1 pr-9 text-center text-base">Thanh toán</Text>
         </View>
-        <View className="flex-row items-center">
+        <View
+          className="flex-row items-center"
+          accessibilityRole="progressbar"
+          accessibilityLabel={`Bước ${step + 1} trong ${STEPS.length}: ${STEPS[step]}`}
+        >
           {STEPS.map((s, i) => (
             <React.Fragment key={s}>
-              <View className="items-center gap-1.5">
+              <View
+                className="items-center gap-1.5"
+                accessibilityLabel={i < step ? `${s}: đã hoàn thành` : i === step ? `${s}: đang thực hiện` : `${s}: chưa tới`}
+              >
                 <View className={cn("h-[30px] w-[30px] items-center justify-center rounded-full border", i <= step ? "border-ink bg-ink" : "border-border bg-surface")}>
                   {i < step ? <Feather name="check" size={15} color={c.onInk} /> : <Text className={cn("text-xs font-extrabold", i <= step ? "text-ink-fg" : "text-fg-faint")}>{i + 1}</Text>}
                 </View>
@@ -160,7 +170,7 @@ export function CheckoutScreen() {
                 <Button title="Thêm địa chỉ" variant="soft" full onPress={() => router.push("/add-address" as any)} />
               ) : (
                 (addresses ?? []).map((a) => (
-                  <SelectRow key={a.id} selected={selectedAddressId === a.id} onPress={() => setSelectedAddressId(a.id)}>
+                  <SelectRow key={a.id} selected={selectedAddressId === a.id} onPress={() => setManualAddressId(a.id)}>
                     <Text className="text-sm text-fg">{a.street}, {a.city}</Text>
                     {a.state ? <Text className="text-xs text-fg-subtle">{a.state}, {a.country}</Text> : null}
                   </SelectRow>

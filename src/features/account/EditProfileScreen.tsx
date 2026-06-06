@@ -11,10 +11,12 @@ import { useAuth } from "@/features/auth/AuthContext";
 import { profileSchema, type ProfileInput } from "./schemas";
 import { Text } from "@/ui/Text";
 import { Button } from "@/ui/Button";
+import { useThemeColors } from "@/config/theme";
 import type { AppError } from "@/domain/errors";
 
 export function EditProfileScreen() {
   const { user } = useAuth();
+  const c = useThemeColors();
   const { data: profile } = useProfile(user?.id ?? null);
   const updateProfile = useUpdateProfile(user?.id ?? "");
   const uploadAvatar = useUploadAvatar(user?.id ?? "");
@@ -30,7 +32,7 @@ export function EditProfileScreen() {
 
   async function pickAvatar() {
     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!perm.granted) { Alert.alert("Permission needed", "Allow photo access to change your avatar."); return; }
+    if (!perm.granted) { Alert.alert("Cần quyền truy cập", "Cho phép truy cập ảnh để đổi ảnh đại diện."); return; }
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
@@ -44,7 +46,7 @@ export function EditProfileScreen() {
     try {
       await uploadAvatar.mutateAsync({ uri: asset.uri, mime: asset.mimeType ?? "image/jpeg" });
     } catch (e) {
-      Alert.alert("Upload failed", (e as AppError).message);
+      Alert.alert("Tải ảnh thất bại", (e as AppError).message);
     }
   }
 
@@ -53,18 +55,21 @@ export function EditProfileScreen() {
       await updateProfile.mutateAsync({ username: data.username });
       router.back();
     } catch (e) {
-      Alert.alert("Error", (e as AppError).message);
+      Alert.alert("Lỗi", (e as AppError).message);
     }
   }
 
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={["bottom"]}>
       <ScrollView contentContainerClassName="gap-5 px-4 pt-4 pb-6" keyboardShouldPersistTaps="handled">
-        <Text variant="h2">Edit profile</Text>
+        <View className="flex-row items-center justify-between">
+          <Text variant="h2">Chỉnh sửa hồ sơ</Text>
+          <Button title="Huỷ" variant="ghost" size="sm" onPress={() => router.back()} />
+        </View>
 
         {/* Avatar */}
         <View className="items-center gap-3">
-          <Pressable onPress={pickAvatar} accessibilityRole="button" accessibilityLabel="Change avatar">
+          <Pressable onPress={pickAvatar} accessibilityRole="button" accessibilityLabel="Đổi ảnh đại diện">
             {profile?.avatar_url ? (
               <Image
                 source={profile.avatar_url}
@@ -79,7 +84,7 @@ export function EditProfileScreen() {
             )}
           </Pressable>
           <Button
-            title={uploadAvatar.isPending ? "Uploading..." : "Change photo"}
+            title={uploadAvatar.isPending ? "Đang tải..." : "Đổi ảnh"}
             variant="ghost"
             loading={uploadAvatar.isPending}
             onPress={pickAvatar}
@@ -88,18 +93,18 @@ export function EditProfileScreen() {
 
         {/* Username */}
         <View className="gap-1">
-          <Text variant="small" className="font-semibold">Display name</Text>
+          <Text variant="small" className="font-semibold">Tên hiển thị</Text>
           <Controller
             control={control}
             name="username"
             render={({ field: { onChange, value } }) => (
               <TextInput
                 className="h-12 rounded-md border border-border bg-surface px-4 text-text text-sm"
-                placeholder="Your name"
-                placeholderTextColor="#A1A1AA"
+                placeholder="Tên của bạn"
+                placeholderTextColor={c.fgSubtle}
                 value={value}
                 onChangeText={onChange}
-                accessibilityLabel="Display name"
+                accessibilityLabel="Tên hiển thị"
               />
             )}
           />
@@ -107,7 +112,7 @@ export function EditProfileScreen() {
         </View>
 
         <View className="gap-1">
-          <Text variant="small" className="font-semibold">Email</Text>
+          <Text variant="small" className="font-semibold">Email (không thể đổi)</Text>
           <View className="h-12 justify-center rounded-md border border-border bg-surface px-4 opacity-60">
             <Text variant="small">{user?.email}</Text>
           </View>
@@ -115,7 +120,7 @@ export function EditProfileScreen() {
       </ScrollView>
 
       <View className="border-t border-border bg-bg px-4 py-3">
-        <Button title="Save changes" loading={updateProfile.isPending} onPress={handleSubmit(onSubmit)} />
+        <Button title="Lưu thay đổi" loading={updateProfile.isPending} onPress={handleSubmit(onSubmit)} />
       </View>
     </SafeAreaView>
   );

@@ -1,7 +1,8 @@
 import React from "react";
-import { View, FlatList, Alert } from "react-native";
+import { View, FlatList, Alert, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
+import Feather from "@expo/vector-icons/Feather";
 import { useAddresses, useDeleteAddress, useSetDefaultAddress } from "./hooks";
 import { useAuth } from "@/features/auth/AuthContext";
 import { Text } from "@/ui/Text";
@@ -9,12 +10,14 @@ import { Button } from "@/ui/Button";
 import { Badge } from "@/ui/Badge";
 import { EmptyState } from "@/ui/EmptyState";
 import { Skeleton } from "@/ui/Skeleton";
+import { useThemeColors } from "@/config/theme";
 
 export function AddressesScreen() {
   const { user } = useAuth();
   const { data: addresses, isLoading } = useAddresses(user?.id ?? null);
   const deleteAddr = useDeleteAddress(user?.id ?? "");
   const setDefault = useSetDefaultAddress(user?.id ?? "");
+  const c = useThemeColors();
 
   if (isLoading) {
     return (
@@ -26,20 +29,23 @@ export function AddressesScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={["top", "bottom"]}>
-      <View className="flex-row items-center justify-between px-4 pt-4 pb-2">
-        <Text variant="h2">Addresses</Text>
-        <Button title="+ Add" className="h-9 px-4" onPress={() => router.push("/add-address" as any)} />
+      <View className="flex-row items-center border-b border-border px-4 pb-3 pt-4">
+        <Pressable onPress={() => router.back()} hitSlop={8} className="h-9 w-9 items-center justify-center" accessibilityLabel="Quay lại">
+          <Feather name="chevron-left" size={24} color={c.fg} />
+        </Pressable>
+        <Text variant="h2" className="flex-1 text-center text-base">Sổ địa chỉ</Text>
+        <Button title="+ Thêm" className="h-9 px-3" onPress={() => router.push("/add-address" as any)} />
       </View>
 
       <FlatList
         data={addresses ?? []}
         keyExtractor={(a) => String(a.id)}
-        contentContainerClassName="gap-3 px-4 pt-2 pb-6"
+        contentContainerClassName="gap-3 px-4 pt-4 pb-6"
         ListEmptyComponent={
           <EmptyState
-            title="No addresses yet"
-            subtitle="Add a shipping address to check out faster."
-            actionLabel="Add address"
+            title="Chưa có địa chỉ nào"
+            subtitle="Thêm địa chỉ giao hàng để thanh toán nhanh hơn."
+            actionLabel="Thêm địa chỉ"
             onAction={() => router.push("/add-address" as any)}
           />
         }
@@ -52,31 +58,31 @@ export function AddressesScreen() {
                   {[a.city, a.state, a.zip_code, a.country].filter(Boolean).join(", ")}
                 </Text>
               </View>
-              {a.is_default && <Badge label="Default" variant="success" />}
+              {a.is_default && <Badge label="Mặc định" variant="success" />}
             </View>
             <View className="flex-row gap-2">
               {!a.is_default && (
                 <Button
-                  title="Set default"
+                  title="Đặt mặc định"
                   variant="secondary"
                   className="h-8 px-3"
                   onPress={() => setDefault.mutate(a.id)}
                 />
               )}
               <Button
-                title="Edit"
+                title="Sửa"
                 variant="ghost"
                 className="h-8 px-3"
                 onPress={() => router.push(`/edit-address/${a.id}` as any)}
               />
               <Button
-                title="Delete"
+                title="Xoá"
                 variant="ghost"
                 className="h-8 px-3"
                 onPress={() =>
-                  Alert.alert("Delete address?", "", [
-                    { text: "Cancel", style: "cancel" },
-                    { text: "Delete", style: "destructive", onPress: () => deleteAddr.mutate(a.id) },
+                  Alert.alert("Xoá địa chỉ?", "", [
+                    { text: "Huỷ", style: "cancel" },
+                    { text: "Xoá", style: "destructive", onPress: () => deleteAddr.mutate(a.id) },
                   ])
                 }
               />

@@ -17,6 +17,7 @@ import { Button } from "@/ui/Button";
 import { SectionHeader } from "@/ui/SectionHeader";
 import { useThemeColors } from "@/config/theme";
 import { getResizedImageUrl } from "@/lib/imageUrl";
+import { formatVnd } from "@/lib/currency";
 import type { ProductType } from "@/domain/types";
 
 export function HomeScreen() {
@@ -33,6 +34,8 @@ export function HomeScreen() {
   const collections = (categories ?? []).slice(0, 6);
 
   function goCatalog() { router.push("/(tabs)/catalog"); }
+  function goCollection(categoryId: number) { router.push(`/(tabs)/catalog?category=${categoryId}` as any); }
+  const freeShipThreshold = settings?.free_shipping_threshold ?? 0;
 
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={[]}>
@@ -60,10 +63,12 @@ export function HomeScreen() {
         </View>
 
         {/* FREE SHIP STRIP */}
-        <View className="flex-row items-center justify-center gap-2.5 bg-ink px-4 py-3">
-          <Feather name="truck" size={16} color={c.onInk} />
-          <Text className="text-[11px] font-bold uppercase tracking-[0.12em] text-ink-fg">Miễn phí ship cho đơn từ 500.000 ₫</Text>
-        </View>
+        {freeShipThreshold > 0 ? (
+          <View className="flex-row items-center justify-center gap-2.5 bg-ink px-4 py-3">
+            <Feather name="truck" size={16} color={c.onInk} />
+            <Text className="text-[11px] font-bold uppercase tracking-[0.12em] text-ink-fg">Miễn phí ship cho đơn từ {formatVnd(freeShipThreshold)}</Text>
+          </View>
+        ) : null}
 
         {/* COLLECTIONS */}
         {collections.length > 0 ? (
@@ -75,7 +80,7 @@ export function HomeScreen() {
               {collections.map((cat, i) => {
                 const img = products[i % Math.max(1, products.length)]?.image;
                 return (
-                  <Pressable key={cat.id} onPress={goCatalog} style={{ width: 230 }} className="active:opacity-80">
+                  <Pressable key={cat.id} onPress={() => goCollection(cat.id)} style={{ width: 230 }} className="active:opacity-80" accessibilityRole="button" accessibilityLabel={`Bộ sưu tập ${cat.name}`}>
                     <View className="relative overflow-hidden bg-img-bg" style={{ height: 300 }}>
                       {img ? <Image source={getResizedImageUrl(img, 500)} style={{ width: "100%", height: "100%" }} contentFit="cover" cachePolicy="memory-disk" /> : null}
                       <View className="absolute inset-0" style={{ backgroundColor: "rgba(0,0,0,0.35)" }} />

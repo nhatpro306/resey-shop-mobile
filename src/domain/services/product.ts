@@ -10,7 +10,13 @@ const LIST_COLS = [
   "image", "stock", "is_active", "category_id", "created_at", "updated_at",
 ].join(",");
 
-const DETAIL_COLS = "*, images:product_images(*), variants:product_variants(*), category:categories(*)";
+const DETAIL_COLS = [
+  "product_id, slug, title, description, material, price, sale_price,",
+  "image, stock, sizes, colors, is_active, sku, category_id, created_at, updated_at,",
+  "images:product_images(id, product_id, url, alt_text, sort_order, is_primary, created_at),",
+  "variants:product_variants(id, product_id, size, color, sku, stock, price_override, image_url, is_active, created_at, updated_at),",
+  "category:categories(id, name, description, parent_id)",
+].join(" ");
 
 export async function listProducts(
   filters: ProductFilters = {},

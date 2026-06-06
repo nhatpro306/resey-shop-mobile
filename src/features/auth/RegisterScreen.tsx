@@ -23,12 +23,12 @@ export function RegisterScreen() {
     setLoading(true);
     try {
       await authService.signUp(data.email, data.password);
-      Alert.alert("Check your email", "We sent you a confirmation link.", [
+      Alert.alert("Kiểm tra email của bạn", "Chúng tôi đã gửi cho bạn một liên kết xác nhận.", [
         { text: "OK", onPress: () => router.replace("/(auth)/login") },
       ]);
     } catch (e) {
       const err = e as AppError;
-      Alert.alert("Registration failed", err.message ?? "Please try again.");
+      Alert.alert("Đăng ký thất bại", err.message ?? "Vui lòng thử lại.");
     } finally {
       setLoading(false);
     }
@@ -36,8 +36,8 @@ export function RegisterScreen() {
 
   const fields: { name: keyof RegisterInput; label: string; placeholder: string; secure?: boolean }[] = [
     { name: "email", label: "Email", placeholder: "you@email.com" },
-    { name: "password", label: "Password", placeholder: "••••••••", secure: true },
-    { name: "confirmPassword", label: "Confirm password", placeholder: "••••••••", secure: true },
+    { name: "password", label: "Mật khẩu", placeholder: "••••••••", secure: true },
+    { name: "confirmPassword", label: "Xác nhận mật khẩu", placeholder: "••••••••", secure: true },
   ];
 
   return (
@@ -46,8 +46,8 @@ export function RegisterScreen() {
         <View className="gap-6">
           <BrandMark />
           <View className="gap-1">
-            <Text variant="h1">Create account</Text>
-            <Text variant="small">Join RESEY</Text>
+            <Text variant="h1">Tạo tài khoản</Text>
+            <Text variant="small">Gia nhập RESEY</Text>
           </View>
         </View>
 
@@ -76,11 +76,11 @@ export function RegisterScreen() {
         </View>
 
         <View className="gap-4">
-          <Button title="Create account" loading={loading} onPress={handleSubmit(onSubmit)} />
+          <Button title="Tạo tài khoản" loading={loading} onPress={handleSubmit(onSubmit)} />
           <View className="flex-row justify-center gap-2">
-            <Text variant="small">Already have an account?</Text>
+            <Text variant="small">Đã có tài khoản?</Text>
             <Pressable onPress={() => router.back()} accessibilityRole="link">
-              <Text variant="small" className="text-primary font-semibold">Sign in</Text>
+              <Text variant="small" className="text-primary font-semibold">Đăng nhập</Text>
             </Pressable>
           </View>
         </View>
