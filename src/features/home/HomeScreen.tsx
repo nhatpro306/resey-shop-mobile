@@ -1,99 +1,156 @@
 import React from "react";
-import { ScrollView, View, Pressable, RefreshControl } from "react-native";
+import { ScrollView, View, Pressable, RefreshControl, ImageBackground } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { Image } from "expo-image";
+import Feather from "@expo/vector-icons/Feather";
 import { useQuery } from "@tanstack/react-query";
 import { getStoreSettings } from "@/domain/services/settings";
 import { qk } from "@/domain/services/keys";
-import { useProducts } from "@/features/catalog/hooks";
+import { useProducts, useCategories } from "@/features/catalog/hooks";
 import { ProductCard } from "@/ui/ProductCard";
 import { Skeleton } from "@/ui/Skeleton";
 import { Text } from "@/ui/Text";
 import { Button } from "@/ui/Button";
+import { SectionHeader } from "@/ui/SectionHeader";
+import { useThemeColors } from "@/config/theme";
+import { getResizedImageUrl } from "@/lib/imageUrl";
 import type { ProductType } from "@/domain/types";
 
 export function HomeScreen() {
-  const { data: settings, isLoading: settingsLoading } = useQuery({
-    queryKey: qk.storeSettings(),
-    queryFn: getStoreSettings,
-    staleTime: 5 * 60_000,
-  });
+  const c = useThemeColors();
+  const { data: settings } = useQuery({ queryKey: qk.storeSettings(), queryFn: getStoreSettings, staleTime: 5 * 60_000 });
+  const { data, isLoading, refetch } = useProducts({ sort: "newest" });
+  const { data: categories } = useCategories();
 
-  const { data, isLoading: productsLoading, refetch } = useProducts({ sort: "newest" });
-  const newest: ProductType[] = data?.pages[0]?.items.slice(0, 6) ?? [];
+  const products: ProductType[] = data?.pages.flatMap((p) => p.items) ?? [];
+  const newest = products.slice(0, 4);
+  const best = products.slice(0, 8);
+  const collections = (categories ?? []).slice(0, 6);
+
+  function goCatalog() { router.push("/(tabs)/catalog"); }
 
   return (
-    <SafeAreaView className="flex-1 bg-bg" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-bg" edges={[]}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={false} onRefresh={refetch} tintColor="#FAFAFA" />}
+        contentContainerStyle={{ paddingBottom: 24 }}
+        refreshControl={<RefreshControl refreshing={false} onRefresh={refetch} tintColor={c.fg} />}
       >
-        {/* Hero */}
-        {settingsLoading ? (
-          <Skeleton className="h-64 w-full" />
-        ) : settings?.hero_image_url ? (
-          <Pressable onPress={() => router.push("/(tabs)/catalog")} accessibilityRole="button">
-            <Image
-              source={settings.hero_image_url}
-              style={{ width: "100%", height: 260 }}
-              contentFit="cover"
-              cachePolicy="memory-disk"
-            />
-            <View className="absolute inset-0 justify-end bg-black/40 p-5">
-              {settings.hero_title && (
-                <Text variant="h1" className="text-white">{settings.hero_title}</Text>
-              )}
-              {settings.hero_subtitle && (
-                <Text variant="small" className="text-white/80">{settings.hero_subtitle}</Text>
-              )}
-              {settings.hero_primary_button_text && (
-                <View className="mt-3 self-start">
-                  <Button
-                    title={settings.hero_primary_button_text}
-                    onPress={() => router.push("/(tabs)/catalog")}
-                    className="px-6"
-                  />
-                </View>
-              )}
+        {/* HERO */}
+        <View className="relative" style={{ height: 520 }}>
+          {settings?.hero_image_url ? (
+            <Image source={settings.hero_image_url} style={{ width: "100%", height: "100%" }} contentFit="cover" cachePolicy="memory-disk" />
+          ) : (
+            <View className="h-full w-full bg-surface-sunken" />
+          )}
+          <View className="absolute inset-0" style={{ backgroundColor: "rgba(0,0,0,0.42)" }} />
+          <View className="absolute inset-x-0 bottom-0 gap-4 px-5 pb-8">
+            <Text className="text-[11px] font-bold uppercase tracking-[0.3em] text-white/85">{settings?.hero_subtitle ?? "Bộ sưu tập mới"}</Text>
+            <Text className="text-[33px] font-black uppercase leading-[1.06] text-white">{settings?.hero_title ?? "Phong cách phố.\nDấu ấn riêng."}</Text>
+            <View className="mt-1.5 flex-row gap-2.5">
+              <Button title={settings?.hero_primary_button_text ?? "Mua hàng mới"} variant="light" icon="arrow-right" onPress={goCatalog} />
+              <Button title="Xem bộ sưu tập" variant="outlineLight" onPress={goCatalog} />
             </View>
-          </Pressable>
-        ) : (
-          <View className="h-48 items-center justify-center bg-surface">
-            <Text variant="h1">{settings?.store_name ?? "RESEY"}</Text>
-            <Text variant="small" className="text-muted">{settings?.slogan ?? "Vietnamese streetwear"}</Text>
           </View>
-        )}
+        </View>
 
-        {/* New arrivals */}
-        <View className="px-4 pb-6 pt-5">
-          <View className="mb-3 flex-row items-end justify-between">
-            <View className="gap-0.5">
-              <Text variant="overline" className="text-muted">Just dropped</Text>
-              <Text variant="h2">New arrivals</Text>
+        {/* FREE SHIP STRIP */}
+        <View className="flex-row items-center justify-center gap-2.5 bg-ink px-4 py-3">
+          <Feather name="truck" size={16} color={c.onInk} />
+          <Text className="text-[11px] font-bold uppercase tracking-[0.12em] text-ink-fg">Miễn phí ship cho đơn từ 500.000 ₫</Text>
+        </View>
+
+        {/* COLLECTIONS */}
+        {collections.length > 0 ? (
+          <View className="pb-1 pt-7">
+            <View className="px-4">
+              <SectionHeader eyebrow="Tuyển chọn" title="Bộ sưu tập" />
             </View>
-            <Pressable onPress={() => router.push("/(tabs)/catalog")} accessibilityRole="link">
-              <Text variant="small" className="text-primary font-semibold">See all</Text>
-            </Pressable>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-3 px-4">
+              {collections.map((cat, i) => {
+                const img = products[i % Math.max(1, products.length)]?.image;
+                return (
+                  <Pressable key={cat.id} onPress={goCatalog} style={{ width: 230 }} className="active:opacity-80">
+                    <View className="relative overflow-hidden bg-img-bg" style={{ height: 300 }}>
+                      {img ? <Image source={getResizedImageUrl(img, 500)} style={{ width: "100%", height: "100%" }} contentFit="cover" cachePolicy="memory-disk" /> : null}
+                      <View className="absolute inset-0" style={{ backgroundColor: "rgba(0,0,0,0.35)" }} />
+                      <View className="absolute inset-x-0 bottom-0 p-4">
+                        <Text variant="h2" className="text-[22px] text-white">{cat.name}</Text>
+                      </View>
+                    </View>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
           </View>
+        ) : null}
 
-          {productsLoading ? (
+        {/* NEW ARRIVALS */}
+        <View className="px-4 pb-1 pt-7">
+          <SectionHeader eyebrow="Vừa lên kệ" title="Hàng mới về" action="Xem tất cả" onAction={goCatalog} />
+          {isLoading ? (
             <View className="flex-row flex-wrap gap-3">
               {Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className="flex-1 basis-5/12 rounded-lg" style={{ aspectRatio: 0.75 }} />
+                <View key={i} className="basis-[47%]">
+                  <Skeleton className="w-full" style={{ aspectRatio: 3 / 4 }} />
+                  <Skeleton className="mt-2.5 h-3 w-4/5" />
+                </View>
               ))}
             </View>
-          ) : newest.length === 0 ? (
-            <Text variant="small" className="text-muted">No products yet. Check back soon.</Text>
           ) : (
-            <View className="flex-row flex-wrap gap-3">
+            <View className="flex-row flex-wrap justify-between gap-y-4">
               {newest.map((p) => (
-                <View key={p.product_id} className="flex-1 basis-5/12">
+                <View key={p.product_id} style={{ width: "48%" }}>
                   <ProductCard product={p} onPress={() => router.push(`/product/${p.slug}` as any)} />
                 </View>
               ))}
             </View>
           )}
+        </View>
+
+        {/* PROMO */}
+        <View className="mx-4 mt-7 flex-row items-center justify-between gap-3 bg-accent px-5 py-6">
+          <View className="gap-1.5">
+            <Text className="text-[10px] font-bold uppercase tracking-[0.24em] text-white/80">RESEY10</Text>
+            <Text variant="h2" className="text-[19px] leading-[1.15] text-white">Giảm 10%{"\n"}đơn đầu tiên</Text>
+          </View>
+          <Feather name="tag" size={40} color="#fff" style={{ opacity: 0.9 }} />
+        </View>
+
+        {/* BEST SELLERS */}
+        {best.length > 0 ? (
+          <View className="pb-1 pt-8">
+            <View className="px-4">
+              <SectionHeader eyebrow="Được yêu thích" title="Bán chạy nhất" action="Xem tất cả" onAction={goCatalog} />
+            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-3 px-4">
+              {best.map((p) => (
+                <View key={p.product_id} style={{ width: 156 }}>
+                  <ProductCard product={p} onPress={() => router.push(`/product/${p.slug}` as any)} />
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        ) : null}
+
+        {/* BRAND STORY */}
+        <View className="relative mt-7" style={{ height: 420 }}>
+          {settings?.hero_image_url ? (
+            <ImageBackground source={{ uri: settings.hero_image_url }} style={{ width: "100%", height: "100%" }} resizeMode="cover">
+              <View className="absolute inset-0" style={{ backgroundColor: "rgba(0,0,0,0.55)" }} />
+            </ImageBackground>
+          ) : (
+            <View className="h-full w-full bg-surface-sunken" />
+          )}
+          <View className="absolute inset-x-0 bottom-0 gap-3.5 px-5 pb-7">
+            <Text className="text-[11px] font-bold uppercase tracking-[0.3em] text-white/80">RESEY</Text>
+            <Text className="text-[30px] font-black uppercase leading-none text-white">Bản sắc đường phố,{"\n"}tinh thần hiện đại.</Text>
+            <Text className="max-w-[300px] text-[13.5px] leading-[1.55] text-white/80">RESEY là streetwear nội địa: form dễ mặc, chất liệu bền, màu sắc cá tính.</Text>
+            <View className="mt-1 flex-row">
+              <Button title="Câu chuyện RESEY" variant="outlineLight" onPress={goCatalog} />
+            </View>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
