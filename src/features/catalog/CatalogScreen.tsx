@@ -5,6 +5,8 @@ import { router } from "expo-router";
 import { FlashList } from "@shopify/flash-list";
 import Feather from "@expo/vector-icons/Feather";
 import { useProducts, useCategories } from "./hooks";
+import { useAuth } from "@/features/auth/AuthContext";
+import { useWishlist } from "@/features/saved/hooks";
 import { ProductCard } from "@/ui/ProductCard";
 import { Skeleton } from "@/ui/Skeleton";
 import { Text } from "@/ui/Text";
@@ -36,6 +38,8 @@ function Chip({ active, label, onPress }: { active: boolean; label: string; onPr
 
 export function CatalogScreen() {
   const c = useThemeColors();
+  const { user } = useAuth();
+  const wishlist = useWishlist(user?.id ?? null);
   const [filters, setFilters] = useState<ProductFilters>({});
   const [search, setSearch] = useState("");
   const [sheet, setSheet] = useState(false);
@@ -141,7 +145,12 @@ export function CatalogScreen() {
           contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 16 }}
           renderItem={({ item }) => (
             <View className="flex-1 px-1.5 pb-4">
-              <ProductCard product={item} onPress={() => router.push(`/product/${item.slug}` as any)} />
+              <ProductCard
+                product={item}
+                saved={wishlist.has(item.product_id)}
+                onToggleSave={user ? () => wishlist.toggle(item.product_id) : undefined}
+                onPress={() => router.push(`/product/${item.slug}` as any)}
+              />
             </View>
           )}
           onEndReached={onEndReached}

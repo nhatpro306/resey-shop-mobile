@@ -14,6 +14,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { Image } from "expo-image";
 import Feather from "@expo/vector-icons/Feather";
 import { useProduct, useProducts } from "./hooks";
+import { useWishlist } from "@/features/saved/hooks";
 import { useAddToCart } from "@/features/cart/hooks";
 import { useReviews } from "@/features/account/hooks";
 import { useAuth } from "@/features/auth/AuthContext";
@@ -50,6 +51,7 @@ export function ProductDetailScreen() {
   const c = useThemeColors();
   const { data: product, isLoading, isError, refetch } = useProduct(slug ?? "");
   const { user } = useAuth();
+  const wishlist = useWishlist(user?.id ?? null);
   const addToCart = useAddToCart(user?.id ?? null);
 
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
@@ -169,9 +171,16 @@ export function ProductDetailScreen() {
             <Pressable onPress={() => router.back()} className="h-10 w-10 items-center justify-center rounded-full bg-white/80" accessibilityLabel="Quay lại">
               <Feather name="chevron-left" size={22} color="#111" />
             </Pressable>
-            <Pressable onPress={() => Alert.alert("Đã sao chép liên kết")} className="h-10 w-10 items-center justify-center rounded-full bg-white/80" accessibilityLabel="Chia sẻ">
-              <Feather name="share-2" size={18} color="#111" />
-            </Pressable>
+            <View className="flex-row gap-2">
+              <Pressable onPress={() => Alert.alert("Đã sao chép liên kết")} className="h-10 w-10 items-center justify-center rounded-full bg-white/80" accessibilityLabel="Chia sẻ">
+                <Feather name="share-2" size={18} color="#111" />
+              </Pressable>
+              {user ? (
+                <Pressable onPress={() => wishlist.toggle(product.product_id)} className="h-10 w-10 items-center justify-center rounded-full bg-white/80" accessibilityLabel="Lưu">
+                  <Feather name="heart" size={19} color={wishlist.has(product.product_id) ? c.accent : "#111"} />
+                </Pressable>
+              ) : null}
+            </View>
           </View>
           {/* dots */}
           {images.length > 1 ? (
