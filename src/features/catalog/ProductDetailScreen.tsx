@@ -168,15 +168,15 @@ export function ProductDetailScreen() {
           />
           {/* top controls */}
           <View style={{ top: insets.top + 8 }} className="absolute inset-x-3 flex-row justify-between">
-            <Pressable onPress={() => router.back()} className="h-10 w-10 items-center justify-center rounded-full bg-white/80" accessibilityLabel="Quay lại">
+            <Pressable onPress={() => router.back()} className="h-11 w-11 items-center justify-center rounded-full bg-white/80" accessibilityRole="button" accessibilityLabel="Quay lại">
               <Feather name="chevron-left" size={22} color="#111" />
             </Pressable>
             <View className="flex-row gap-2">
-              <Pressable onPress={() => Alert.alert("Đã sao chép liên kết")} className="h-10 w-10 items-center justify-center rounded-full bg-white/80" accessibilityLabel="Chia sẻ">
+              <Pressable onPress={() => Alert.alert("Đã sao chép liên kết")} className="h-11 w-11 items-center justify-center rounded-full bg-white/80" accessibilityRole="button" accessibilityLabel="Chia sẻ">
                 <Feather name="share-2" size={18} color="#111" />
               </Pressable>
               {user ? (
-                <Pressable onPress={() => wishlist.toggle(product.product_id)} className="h-10 w-10 items-center justify-center rounded-full bg-white/80" accessibilityLabel="Lưu">
+                <Pressable onPress={() => wishlist.toggle(product.product_id)} className="h-11 w-11 items-center justify-center rounded-full bg-white/80" accessibilityRole="button" accessibilityLabel="Lưu sản phẩm">
                   <Feather name="heart" size={19} color={wishlist.has(product.product_id) ? c.accent : "#111"} />
                 </Pressable>
               ) : null}
@@ -266,12 +266,12 @@ export function ProductDetailScreen() {
           <View className="mt-6 flex-row items-center justify-between">
             <Text variant="eyebrow">Số lượng</Text>
             <View className="flex-row items-center border border-border">
-              <Pressable onPress={() => setQty((q) => Math.max(1, q - 1))} className="h-[38px] w-[38px] items-center justify-center" accessibilityLabel="Giảm">
-                <Feather name="minus" size={15} color={c.fg} />
+              <Pressable onPress={() => setQty((q) => Math.max(1, q - 1))} className="h-11 w-11 items-center justify-center" accessibilityRole="button" accessibilityLabel="Giảm số lượng">
+                <Feather name="minus" size={16} color={c.fg} />
               </Pressable>
-              <Text className="w-9 text-center text-sm font-bold text-fg">{qty}</Text>
-              <Pressable onPress={() => setQty((q) => q + 1)} className="h-[38px] w-[38px] items-center justify-center" accessibilityLabel="Tăng">
-                <Feather name="plus" size={15} color={c.fg} />
+              <Text className="w-10 text-center text-sm font-bold text-fg">{qty}</Text>
+              <Pressable onPress={() => setQty((q) => q + 1)} className="h-11 w-11 items-center justify-center" accessibilityRole="button" accessibilityLabel="Tăng số lượng">
+                <Feather name="plus" size={16} color={c.fg} />
               </Pressable>
             </View>
           </View>
