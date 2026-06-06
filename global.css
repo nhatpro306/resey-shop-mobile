@@ -1,3 +1,55 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* RESEY theme tokens (RGB channels for tailwind rgb(var(--x) / <alpha>)).
+   Light is default; .dark overrides. Mirrors the Claude Design handoff palette. */
+@layer base {
+  :root {
+    --bg: 255 255 255;
+    --bg-muted: 250 250 250;
+    --surface: 255 255 255;
+    --surface-sunken: 244 244 245;
+    --img-bg: 241 241 243;
+    --fg: 9 9 11;
+    --fg-muted: 82 82 91;
+    --fg-subtle: 113 113 122;
+    --fg-faint: 161 161 170;
+    --fg-inverse: 255 255 255;
+    --border: 228 228 231;
+    --border-strong: 9 9 11;
+    --accent: 110 15 17;
+    --accent-ink: 76 10 12;
+    --on-accent: 255 255 255;
+    --ink: 9 9 11;
+    --on-ink: 255 255 255;
+    --ok: 4 120 87;
+    --warn: 180 83 9;
+    --sale: 110 15 17;
+  }
+
+  .dark:root,
+  :root.dark,
+  .dark {
+    --bg: 9 9 11;
+    --bg-muted: 14 14 16;
+    --surface: 19 19 22;
+    --surface-sunken: 26 26 29;
+    --img-bg: 26 26 29;
+    --fg: 250 250 250;
+    --fg-muted: 161 161 170;
+    --fg-subtle: 138 138 147;
+    --fg-faint: 82 82 91;
+    --fg-inverse: 9 9 11;
+    --border: 39 39 42;
+    --border-strong: 250 250 250;
+    --accent: 224 89 92;
+    --accent-ink: 200 72 76;
+    --on-accent: 255 255 255;
+    --ink: 250 250 250;
+    --on-ink: 9 9 11;
+    --ok: 52 211 153;
+    --warn: 251 191 36;
+    --sale: 224 89 92;
+  }
+}
