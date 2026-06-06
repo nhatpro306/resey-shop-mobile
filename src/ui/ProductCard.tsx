@@ -56,9 +56,10 @@ export function ProductCard({ product, onPress, saved, onToggleSave }: ProductCa
         {onToggleSave ? (
           <Pressable
             onPress={(e) => { e.stopPropagation(); onToggleSave(product.product_id); }}
+            hitSlop={8}
             className="absolute right-[7px] top-[7px] h-[34px] w-[34px] items-center justify-center rounded-full bg-white/80"
             accessibilityRole="button"
-            accessibilityLabel="Save"
+            accessibilityLabel="Lưu sản phẩm"
           >
             <Feather name="heart" size={17} color={saved ? c.accent : "#1a1a1a"} />
           </Pressable>

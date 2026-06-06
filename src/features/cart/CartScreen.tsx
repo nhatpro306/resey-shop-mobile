@@ -128,9 +128,9 @@ export function CartScreen() {
               <View className="flex-1" />
               <View className="flex-row items-center justify-between">
                 <View className="flex-row items-center border border-border">
-                  <Pressable onPress={() => updateQty.mutate({ itemId: item.id, quantity: item.quantity - 1 })} className="h-8 w-8 items-center justify-center"><Feather name="minus" size={14} color={c.fg} /></Pressable>
-                  <Text className="w-7 text-center text-[13px] font-bold text-fg">{item.quantity}</Text>
-                  <Pressable onPress={() => updateQty.mutate({ itemId: item.id, quantity: item.quantity + 1 })} className="h-8 w-8 items-center justify-center"><Feather name="plus" size={14} color={c.fg} /></Pressable>
+                  <Pressable onPress={() => updateQty.mutate({ itemId: item.id, quantity: item.quantity - 1 })} className="h-11 w-11 items-center justify-center" accessibilityRole="button" accessibilityLabel="Giảm số lượng"><Feather name="minus" size={15} color={c.fg} /></Pressable>
+                  <Text className="w-8 text-center text-[13px] font-bold text-fg">{item.quantity}</Text>
+                  <Pressable onPress={() => updateQty.mutate({ itemId: item.id, quantity: item.quantity + 1 })} className="h-11 w-11 items-center justify-center" accessibilityRole="button" accessibilityLabel="Tăng số lượng"><Feather name="plus" size={15} color={c.fg} /></Pressable>
                 </View>
                 <Text className="text-sm font-bold text-fg">{formatVnd(item.price * item.quantity)}</Text>
               </View>
