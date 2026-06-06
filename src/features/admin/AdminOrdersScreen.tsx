@@ -100,21 +100,24 @@ export function AdminOrdersScreen() {
           contentContainerClassName="gap-2 px-4 pb-6"
           refreshControl={<RefreshControl refreshing={false} onRefresh={refetch} tintColor="#FAFAFA" />}
           renderItem={({ item: order }) => (
-            <Pressable
-              onPress={() => router.push(`/order/${order.id}` as any)}
-              className="rounded-lg bg-surface p-3 gap-2 active:opacity-80"
-              accessibilityRole="button"
-            >
-              <View className="flex-row items-center justify-between">
-                <Text variant="small" className="font-semibold">#{order.id} — {order.customer_name ?? "Customer"}</Text>
-                <Badge label={order.status} variant={orderStatusVariant(order.status)} />
-              </View>
-              <View className="flex-row items-center justify-between">
-                <Text variant="caption" className="text-muted">
-                  {new Date(order.created_at).toLocaleDateString("vi-VN")}
-                </Text>
-                <Text variant="small" className="font-semibold text-primary">{formatVnd(order.total)}</Text>
-              </View>
+            <View className="rounded-lg bg-surface p-3 gap-2">
+              <Pressable
+                onPress={() => router.push(`/order/${order.id}` as any)}
+                className="gap-2 active:opacity-70"
+                accessibilityRole="button"
+                accessibilityLabel={`Order #${order.id}`}
+              >
+                <View className="flex-row items-center justify-between">
+                  <Text variant="small" className="font-semibold">#{order.id} — {order.customer_name ?? "Customer"}</Text>
+                  <Badge label={order.status} variant={orderStatusVariant(order.status)} />
+                </View>
+                <View className="flex-row items-center justify-between">
+                  <Text variant="caption" className="text-muted">
+                    {new Date(order.created_at).toLocaleDateString("vi-VN")}
+                  </Text>
+                  <Text variant="small" className="font-semibold text-primary">{formatVnd(order.total)}</Text>
+                </View>
+              </Pressable>
               {NEXT_STATUSES[order.status as OrderStatus]?.length ? (
                 <Button
                   title="Change status"
@@ -123,7 +126,7 @@ export function AdminOrdersScreen() {
                   onPress={() => handleStatusChange(order.id, order.status as OrderStatus)}
                 />
               ) : null}
-            </Pressable>
+            </View>
           )}
           ListFooterComponent={
             data && data.total > 30 ? (

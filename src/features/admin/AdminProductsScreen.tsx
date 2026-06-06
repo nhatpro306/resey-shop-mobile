@@ -49,16 +49,19 @@ export function AdminProductsScreen() {
           contentContainerClassName="gap-2 px-4 pb-6"
           refreshControl={<RefreshControl refreshing={false} onRefresh={refetch} tintColor="#FAFAFA" />}
           renderItem={({ item: p }) => (
-            <Pressable
-              onPress={() => router.push(`/admin/product/${p.product_id}` as any)}
-              className="flex-row items-center gap-3 rounded-lg bg-surface p-3 active:opacity-80"
-              accessibilityRole="button"
-            >
-              <View className="flex-1 gap-0.5">
-                <Text variant="small" className="font-semibold" numberOfLines={1}>{p.title}</Text>
-                <Text variant="caption" className="text-muted">{formatVnd(p.price)} · stock: {p.stock}</Text>
-              </View>
-              <Badge label={p.is_active ? "Active" : "Inactive"} variant={p.is_active ? "success" : "default"} />
+            <View className="flex-row items-center gap-3 rounded-lg bg-surface p-3">
+              <Pressable
+                onPress={() => router.push(`/admin/product/${p.product_id}` as any)}
+                className="flex-1 flex-row items-center gap-3 active:opacity-70"
+                accessibilityRole="button"
+                accessibilityLabel={`Edit ${p.title}`}
+              >
+                <View className="flex-1 gap-0.5">
+                  <Text variant="small" className="font-semibold" numberOfLines={1}>{p.title}</Text>
+                  <Text variant="caption" className="text-muted">{formatVnd(p.price)} · stock: {p.stock}</Text>
+                </View>
+                <Badge label={p.is_active ? "Active" : "Inactive"} variant={p.is_active ? "success" : "default"} />
+              </Pressable>
               <Button
                 title={p.is_active ? "Disable" : "Enable"}
                 variant="ghost"
@@ -77,7 +80,7 @@ export function AdminProductsScreen() {
                   )
                 }
               />
-            </Pressable>
+            </View>
           )}
           ListFooterComponent={
             data && data.total > 30 ? (

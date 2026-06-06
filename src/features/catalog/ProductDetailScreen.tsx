@@ -4,11 +4,13 @@ import {
   ScrollView,
   Pressable,
   Alert,
+  Share,
   FlatList,
   Dimensions,
   type NativeSyntheticEvent,
   type NativeScrollEvent,
 } from "react-native";
+import { env } from "@/config/env";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import { Image } from "expo-image";
@@ -172,7 +174,15 @@ export function ProductDetailScreen() {
               <Feather name="chevron-left" size={22} color="#111" />
             </Pressable>
             <View className="flex-row gap-2">
-              <Pressable onPress={() => Alert.alert("Đã sao chép liên kết")} className="h-11 w-11 items-center justify-center rounded-full bg-white/80" accessibilityRole="button" accessibilityLabel="Chia sẻ">
+              <Pressable
+                onPress={async () => {
+                  const url = env.webUrl ? `${env.webUrl}/products/${product.slug}` : product.title;
+                  try { await Share.share({ message: url, title: product.title }); } catch { /* dismissed */ }
+                }}
+                className="h-11 w-11 items-center justify-center rounded-full bg-white/80"
+                accessibilityRole="button"
+                accessibilityLabel="Chia sẻ"
+              >
                 <Feather name="share-2" size={18} color="#111" />
               </Pressable>
               {user ? (

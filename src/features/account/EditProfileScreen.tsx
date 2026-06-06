@@ -60,7 +60,10 @@ export function EditProfileScreen() {
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={["bottom"]}>
       <ScrollView contentContainerClassName="gap-5 px-4 pt-4 pb-6" keyboardShouldPersistTaps="handled">
-        <Text variant="h2">Edit profile</Text>
+        <View className="flex-row items-center justify-between">
+          <Text variant="h2">Edit profile</Text>
+          <Button title="Cancel" variant="ghost" size="sm" onPress={() => router.back()} />
+        </View>
 
         {/* Avatar */}
         <View className="items-center gap-3">

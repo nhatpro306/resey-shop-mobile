@@ -67,7 +67,10 @@ export function AddressFormScreen() {
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={["bottom"]}>
       <ScrollView contentContainerClassName="gap-4 px-4 pt-4 pb-6" keyboardShouldPersistTaps="handled">
-        <Text variant="h2">{isEdit ? "Edit address" : "Add address"}</Text>
+        <View className="flex-row items-center justify-between">
+          <Text variant="h2">{isEdit ? "Edit address" : "Add address"}</Text>
+          <Button title="Cancel" variant="ghost" size="sm" onPress={() => router.back()} />
+        </View>
 
         {FIELDS.map(({ name, label }) => (
           <View key={name} className="gap-1">

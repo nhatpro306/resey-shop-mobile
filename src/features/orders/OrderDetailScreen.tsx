@@ -41,9 +41,10 @@ export function OrderDetailScreen() {
     <SafeAreaView className="flex-1 bg-bg">
       <ScrollView contentContainerClassName="gap-4 px-4 pt-4 pb-8">
         <View className="flex-row items-center justify-between">
-          <Text variant="h2">Order #{order.id}</Text>
+          <Button title="← Back" variant="ghost" size="sm" onPress={() => router.back()} />
           <Badge label={order.status} variant={orderStatusVariant(order.status)} />
         </View>
+        <Text variant="h2">Order #{order.id}</Text>
 
         {/* Status timeline */}
         <View className="rounded-lg bg-surface p-4 gap-3">

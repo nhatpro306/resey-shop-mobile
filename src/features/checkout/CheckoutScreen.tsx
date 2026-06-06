@@ -53,9 +53,16 @@ export function CheckoutScreen() {
   const placeOrder = usePlaceOrder(user?.id ?? null);
 
   const [step, setStep] = useState(0);
-  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
-    addresses?.find((a) => a.is_default)?.id ?? addresses?.[0]?.id ?? null,
-  );
+  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
+
+  // Sync default address once the query resolves (addresses may not be cached on first render).
+  React.useEffect(() => {
+    if (!addresses?.length) return;
+    setSelectedAddressId((prev) => {
+      if (prev !== null) return prev;
+      return addresses.find((a) => a.is_default)?.id ?? addresses[0]?.id ?? null;
+    });
+  }, [addresses]);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cod");
 
   const items = cart?.cart_items ?? [];
