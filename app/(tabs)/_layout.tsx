@@ -28,11 +28,12 @@ export default function TabsLayout() {
         tabBarLabelStyle: { fontSize: 11, fontWeight: "600" },
       }}
     >
-      <Tabs.Screen name="index" options={{ title: "Home", tabBarIcon: tabIcon("home") }} />
-      <Tabs.Screen name="catalog" options={{ title: "Catalog", tabBarIcon: tabIcon("grid") }} />
-      <Tabs.Screen name="cart" options={{ title: "Cart", tabBarIcon: tabIcon("shopping-bag") }} />
-      <Tabs.Screen name="orders" options={{ title: "Orders", tabBarIcon: tabIcon("package") }} />
-      <Tabs.Screen name="account" options={{ title: "Account", tabBarIcon: tabIcon("user") }} />
+      <Tabs.Screen name="index" options={{ title: "Trang chủ", tabBarIcon: tabIcon("home") }} />
+      <Tabs.Screen name="catalog" options={{ title: "Cửa hàng", tabBarIcon: tabIcon("grid") }} />
+      <Tabs.Screen name="saved" options={{ title: "Yêu thích", tabBarIcon: tabIcon("heart") }} />
+      <Tabs.Screen name="cart" options={{ title: "Giỏ", tabBarIcon: tabIcon("shopping-bag") }} />
+      <Tabs.Screen name="account" options={{ title: "Tài khoản", tabBarIcon: tabIcon("user") }} />
+      <Tabs.Screen name="orders" options={{ href: null }} />
     </Tabs>
   );
 }

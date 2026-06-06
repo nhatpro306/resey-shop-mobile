@@ -8,6 +8,8 @@ import { useQuery } from "@tanstack/react-query";
 import { getStoreSettings } from "@/domain/services/settings";
 import { qk } from "@/domain/services/keys";
 import { useProducts, useCategories } from "@/features/catalog/hooks";
+import { useAuth } from "@/features/auth/AuthContext";
+import { useWishlist } from "@/features/saved/hooks";
 import { ProductCard } from "@/ui/ProductCard";
 import { Skeleton } from "@/ui/Skeleton";
 import { Text } from "@/ui/Text";
@@ -19,6 +21,8 @@ import type { ProductType } from "@/domain/types";
 
 export function HomeScreen() {
   const c = useThemeColors();
+  const { user } = useAuth();
+  const wishlist = useWishlist(user?.id ?? null);
   const { data: settings } = useQuery({ queryKey: qk.storeSettings(), queryFn: getStoreSettings, staleTime: 5 * 60_000 });
   const { data, isLoading, refetch } = useProducts({ sort: "newest" });
   const { data: categories } = useCategories();
@@ -102,7 +106,7 @@ export function HomeScreen() {
             <View className="flex-row flex-wrap justify-between gap-y-4">
               {newest.map((p) => (
                 <View key={p.product_id} style={{ width: "48%" }}>
-                  <ProductCard product={p} onPress={() => router.push(`/product/${p.slug}` as any)} />
+                  <ProductCard product={p} saved={wishlist.has(p.product_id)} onToggleSave={user ? () => wishlist.toggle(p.product_id) : undefined} onPress={() => router.push(`/product/${p.slug}` as any)} />
                 </View>
               ))}
             </View>
@@ -127,7 +131,7 @@ export function HomeScreen() {
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-3 px-4">
               {best.map((p) => (
                 <View key={p.product_id} style={{ width: 156 }}>
-                  <ProductCard product={p} onPress={() => router.push(`/product/${p.slug}` as any)} />
+                  <ProductCard product={p} saved={wishlist.has(p.product_id)} onToggleSave={user ? () => wishlist.toggle(p.product_id) : undefined} onPress={() => router.push(`/product/${p.slug}` as any)} />
                 </View>
               ))}
             </ScrollView>
