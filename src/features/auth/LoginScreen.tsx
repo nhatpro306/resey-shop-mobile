@@ -53,6 +53,8 @@ export function LoginScreen() {
                 placeholder="you@email.com"
                 autoCapitalize="none"
                 keyboardType="email-address"
+                autoComplete="email"
+                textContentType="emailAddress"
                 value={value}
                 onChangeText={onChange}
                 error={errors.email?.message}
@@ -67,6 +69,8 @@ export function LoginScreen() {
                 label="Password"
                 placeholder="••••••••"
                 password
+                autoComplete="current-password"
+                textContentType="password"
                 value={value}
                 onChangeText={onChange}
                 error={errors.password?.message}
