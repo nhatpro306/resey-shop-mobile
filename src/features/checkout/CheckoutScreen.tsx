@@ -149,7 +149,7 @@ export function CheckoutScreen() {
                   control={control}
                   name={name}
                   render={({ field: { onChange, value } }) => (
-                    <Input placeholder={label} keyboardType={keyboard ?? "default"} autoCapitalize={name === "customerEmail" ? "none" : "sentences"} value={value ?? ""} onChangeText={onChange} error={errors[name]?.message} accessibilityLabel={label} />
+                    <Input placeholder={label} keyboardType={keyboard ?? "default"} autoCapitalize={name === "customerEmail" ? "none" : "sentences"} autoComplete={name === "customerName" ? "name" : name === "customerPhone" ? "tel" : name === "customerEmail" ? "email" : "off"} textContentType={name === "customerName" ? "name" : name === "customerPhone" ? "telephoneNumber" : name === "customerEmail" ? "emailAddress" : "none"} value={value ?? ""} onChangeText={onChange} error={errors[name]?.message} accessibilityLabel={label} />
                   )}
                 />
               ))}

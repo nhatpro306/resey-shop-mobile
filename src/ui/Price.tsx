@@ -19,9 +19,9 @@ export function Price({
   const cls = size === "lg" ? "text-xl" : size === "md" ? "text-base" : "text-[13px]";
   return (
     <View className="flex-row items-baseline gap-2">
-      <Text className={cn(cls, "font-bold", accent && onSale ? "text-accent" : "text-fg")}>{formatVnd(main)}</Text>
+      <Text style={{ fontVariant: ["tabular-nums"] }} className={cn(cls, "font-bold", accent && onSale ? "text-accent" : "text-fg")}>{formatVnd(main)}</Text>
       {onSale ? (
-        <Text className="text-xs text-fg-faint line-through">{formatVnd(price)}</Text>
+        <Text style={{ fontVariant: ["tabular-nums"] }} className="text-xs text-fg-faint line-through">{formatVnd(price)}</Text>
       ) : null}
     </View>
   );

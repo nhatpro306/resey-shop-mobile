@@ -63,6 +63,8 @@ export function RegisterScreen() {
                   placeholder={placeholder}
                   autoCapitalize="none"
                   keyboardType={name === "email" ? "email-address" : "default"}
+                  autoComplete={name === "email" ? "email" : "new-password"}
+                  textContentType={name === "email" ? "emailAddress" : "newPassword"}
                   password={secure}
                   value={value}
                   onChangeText={onChange}
