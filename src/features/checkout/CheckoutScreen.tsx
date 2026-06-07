@@ -99,7 +99,7 @@ export function CheckoutScreen() {
       });
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       track("purchase", { orderId: order.id, total, paymentMethod });
-      router.replace(`/order/${order.id}` as any);
+      router.replace(`/order-confirmation?id=${order.id}` as any);
     } catch (e) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert("Đặt hàng thất bại", (e as AppError).message);
