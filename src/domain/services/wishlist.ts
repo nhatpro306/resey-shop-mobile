@@ -8,10 +8,13 @@ export async function getWishlistIds(userId: string): Promise<string[]> {
   return (data ?? []).map((r) => r.product_id as string);
 }
 
+const WISHLIST_PRODUCT_COLS =
+  "product:products(product_id, slug, title, price, sale_price, image, stock, is_active, category_id, created_at, updated_at)";
+
 export async function getWishlistProducts(userId: string): Promise<ProductType[]> {
   const { data, error } = await supabase
     .from("wishlists")
-    .select("product:products(*)")
+    .select(WISHLIST_PRODUCT_COLS)
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
   if (error) throw mapSupabaseError(error);

@@ -17,13 +17,20 @@ export function SavedScreen() {
   const { user } = useAuth();
   const c = useThemeColors();
   const wishlist = useWishlist(user?.id ?? null);
-  const { data, isLoading } = useWishlistProducts(user?.id ?? null);
+  const { data, isLoading, isError, refetch } = useWishlistProducts(user?.id ?? null);
   const items = (data ?? []) as ProductType[];
 
   if (!user) {
     return (
       <SafeAreaView className="flex-1 bg-bg" edges={["top"]}>
         <EmptyState title="Đăng nhập để xem yêu thích" actionLabel="Đăng nhập" onAction={() => router.push("/(auth)/login")} />
+      </SafeAreaView>
+    );
+  }
+  if (isError) {
+    return (
+      <SafeAreaView className="flex-1 bg-bg" edges={["top"]}>
+        <EmptyState title="Không tải được danh sách yêu thích" subtitle="Vui lòng kiểm tra kết nối và thử lại." actionLabel="Thử lại" onAction={() => refetch()} />
       </SafeAreaView>
     );
   }

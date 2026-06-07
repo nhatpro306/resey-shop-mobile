@@ -2,15 +2,18 @@ import { supabase } from "@/data/supabase";
 import { mapSupabaseError, AppError } from "@/domain/errors";
 import type { OrderType, CheckoutPayload } from "@/domain/types";
 
+const ORDER_COLS =
+  "id, user_id, status, total, shipping_address_id, customer_name, customer_phone, customer_email, customer_note, payment_method, payment_id, created_at, updated_at";
+
 const ORDER_DETAIL_COLS = `
-  *,
+  ${ORDER_COLS},
   order_items (
     id, order_id, product_id, variant_id, quantity, price,
     selected_size, selected_color, variant_info,
     product_title_snapshot, product_image_snapshot, sku_snapshot, size_snapshot, color_snapshot,
     product:products (product_id, title, image)
   ),
-  shipping_address:addresses!shipping_address_id (*)
+  shipping_address:addresses!shipping_address_id (id, user_id, street, city, state, zip_code, country, is_default, created_at)
 `;
 
 export async function createOrder(payload: CheckoutPayload): Promise<OrderType> {

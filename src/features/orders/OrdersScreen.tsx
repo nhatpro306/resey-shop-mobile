@@ -21,7 +21,7 @@ const STATUS_VI: Record<string, string> = {
 export function OrdersScreen() {
   const { user } = useAuth();
   const c = useThemeColors();
-  const { data: orders, isLoading, refetch } = useOrders(user?.id ?? null);
+  const { data: orders, isLoading, isError, refetch } = useOrders(user?.id ?? null);
 
   if (!user) {
     return (
@@ -34,6 +34,13 @@ export function OrdersScreen() {
     return (
       <SafeAreaView className="flex-1 gap-3 bg-bg px-4 pt-6" edges={["top"]}>
         {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24" />)}
+      </SafeAreaView>
+    );
+  }
+  if (isError) {
+    return (
+      <SafeAreaView className="flex-1 bg-bg" edges={["top"]}>
+        <EmptyState title="Không tải được đơn hàng" subtitle="Vui lòng kiểm tra kết nối và thử lại." actionLabel="Thử lại" onAction={() => refetch()} />
       </SafeAreaView>
     );
   }

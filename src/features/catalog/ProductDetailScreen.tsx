@@ -10,6 +10,7 @@ import {
   type NativeSyntheticEvent,
   type NativeScrollEvent,
 } from "react-native";
+import { env } from "@/config/env";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import { Image } from "expo-image";
@@ -173,7 +174,15 @@ export function ProductDetailScreen() {
               <Feather name="chevron-left" size={22} color="#111" />
             </Pressable>
             <View className="flex-row gap-2">
-              <Pressable onPress={() => Share.share({ message: `${product.title} — RESEY\nhttps://resey.vn/products/${product.slug}` })} className="h-11 w-11 items-center justify-center rounded-full bg-white/80" accessibilityRole="button" accessibilityLabel="Chia sẻ">
+              <Pressable
+                onPress={async () => {
+                  const url = env.webUrl ? `${env.webUrl}/products/${product.slug}` : product.title;
+                  try { await Share.share({ message: url, title: product.title }); } catch { /* dismissed */ }
+                }}
+                className="h-11 w-11 items-center justify-center rounded-full bg-white/80"
+                accessibilityRole="button"
+                accessibilityLabel="Chia sẻ"
+              >
                 <Feather name="share-2" size={18} color="#111" />
               </Pressable>
               {user ? (
@@ -252,7 +261,8 @@ export function ProductDetailScreen() {
                         out && "opacity-50",
                       )}
                       accessibilityRole="button"
-                      accessibilityLabel={`Size ${s}`}
+                      accessibilityLabel={`Size ${s}${out ? ", hết hàng" : ""}`}
+                      accessibilityState={{ disabled: out, selected: on }}
                     >
                       <Text className={cn("text-[13px] font-bold", on ? "text-ink-fg" : out ? "text-fg-faint line-through" : "text-fg")}>{s}</Text>
                     </Pressable>

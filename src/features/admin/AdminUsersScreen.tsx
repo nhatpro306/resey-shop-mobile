@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, FlatList, RefreshControl, Alert } from "react-native";
+import { View, FlatList, RefreshControl, Alert, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAdminUsers, useToggleUserActive, useSetUserRole } from "./hooks";
 import { useAuth } from "@/features/auth/AuthContext";
@@ -9,6 +9,8 @@ import { Badge } from "@/ui/Badge";
 import { Skeleton } from "@/ui/Skeleton";
 import { EmptyState } from "@/ui/EmptyState";
 import { router } from "expo-router";
+import Feather from "@expo/vector-icons/Feather";
+import { useThemeColors } from "@/config/theme";
 import type { AppError } from "@/domain/errors";
 
 export function AdminUsersScreen() {
@@ -17,6 +19,7 @@ export function AdminUsersScreen() {
   const { data, isLoading, refetch } = useAdminUsers(page);
   const toggleActive = useToggleUserActive();
   const setRole = useSetUserRole();
+  const c = useThemeColors();
 
   if (!isAdmin) {
     return (
@@ -32,7 +35,13 @@ export function AdminUsersScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={["top"]}>
-      <Text variant="h2" className="px-4 pt-4 pb-2">Users</Text>
+      <View className="flex-row items-center border-b border-border px-4 pb-3 pt-4">
+        <Pressable onPress={() => router.back()} hitSlop={8} className="h-9 w-9 items-center justify-center" accessibilityLabel="Back">
+          <Feather name="chevron-left" size={24} color={c.fg} />
+        </Pressable>
+        <Text variant="h2" className="flex-1 text-center text-base">Users</Text>
+        <View className="w-9" />
+      </View>
 
       {isLoading ? (
         <View className="px-4 gap-3">

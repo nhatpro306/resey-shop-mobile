@@ -62,7 +62,7 @@ export async function adminCreateProduct(input: CreateProductData): Promise<Prod
   const { data, error } = await supabase
     .from("products")
     .insert({ ...input, is_active: input.is_active ?? true })
-    .select()
+    .select(ADMIN_COLS)
     .single();
   if (error) throw mapSupabaseError(error);
   return data as unknown as ProductType;
@@ -76,7 +76,7 @@ export async function adminUpdateProduct(
     .from("products")
     .update({ ...input, updated_at: new Date().toISOString() })
     .eq("product_id", productId)
-    .select()
+    .select(ADMIN_COLS)
     .single();
   if (error) throw mapSupabaseError(error);
   return data as unknown as ProductType;
@@ -90,13 +90,16 @@ export async function adminToggleProduct(productId: string, isActive: boolean): 
   if (error) throw mapSupabaseError(error);
 }
 
+const VARIANT_COLS = "id, product_id, size, color, sku, stock, price_override, image_url, is_active, created_at, updated_at";
+const IMAGE_COLS = "id, product_id, url, alt_text, sort_order, is_primary, created_at";
+
 export async function adminUpsertVariant(
   variant: Partial<ProductVariantType> & { product_id: string },
 ): Promise<ProductVariantType> {
   const { data, error } = await supabase
     .from("product_variants")
     .upsert({ ...variant, updated_at: new Date().toISOString() })
-    .select()
+    .select(VARIANT_COLS)
     .single();
   if (error) throw mapSupabaseError(error);
   return data as ProductVariantType;
@@ -117,7 +120,7 @@ export async function adminAddProductImage(
   const { data, error } = await supabase
     .from("product_images")
     .insert({ product_id: productId, url, is_primary: isPrimary, sort_order: sortOrder })
-    .select()
+    .select(IMAGE_COLS)
     .single();
   if (error) throw mapSupabaseError(error);
   return data as ProductImageType;

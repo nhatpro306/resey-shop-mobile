@@ -68,11 +68,12 @@ export async function adminUpdateOrderStatus(
   if (!VALID_STATUSES.includes(status)) {
     throw new AppError("VALIDATION", `Invalid order status: ${status}`);
   }
+  const ORDER_COLS = "id, user_id, status, total, shipping_address_id, payment_method, payment_id, customer_name, customer_phone, customer_email, customer_note, created_at, updated_at";
   const { data, error } = await supabase
     .from("orders")
     .update({ status, updated_at: new Date().toISOString() })
     .eq("id", orderId)
-    .select()
+    .select(ORDER_COLS)
     .single();
   if (error) throw mapSupabaseError(error);
   return data as OrderType;

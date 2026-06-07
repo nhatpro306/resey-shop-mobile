@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { View, FlatList, Pressable, RefreshControl, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
+import { useThemeColors } from "@/config/theme";
+import Feather from "@expo/vector-icons/Feather";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminListOrders, adminUpdateOrderStatus } from "@/domain/services/admin/order";
 import { Text } from "@/ui/Text";
@@ -33,6 +35,7 @@ export function AdminOrdersScreen() {
   const qc = useQueryClient();
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
+  const c = useThemeColors();
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["admin-orders", statusFilter, page],
@@ -65,8 +68,14 @@ export function AdminOrdersScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={["top"]}>
-      <View className="px-4 pt-4 pb-2">
-        <Text variant="h2" className="mb-2">Orders</Text>
+      <View className="flex-row items-center border-b border-border px-4 pb-3 pt-4">
+        <Pressable onPress={() => router.back()} hitSlop={8} className="h-9 w-9 items-center justify-center" accessibilityLabel="Back">
+          <Feather name="chevron-left" size={24} color={c.fg} />
+        </Pressable>
+        <Text variant="h2" className="flex-1 text-center text-base">Orders</Text>
+        <View className="w-9" />
+      </View>
+      <View className="px-4 pt-3 pb-2">
         <FlatList
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -100,21 +109,24 @@ export function AdminOrdersScreen() {
           contentContainerClassName="gap-2 px-4 pb-6"
           refreshControl={<RefreshControl refreshing={false} onRefresh={refetch} tintColor="#FAFAFA" />}
           renderItem={({ item: order }) => (
-            <Pressable
-              onPress={() => router.push(`/order/${order.id}` as any)}
-              className="rounded-lg bg-surface p-3 gap-2 active:opacity-80"
-              accessibilityRole="button"
-            >
-              <View className="flex-row items-center justify-between">
-                <Text variant="small" className="font-semibold">#{order.id} — {order.customer_name ?? "Customer"}</Text>
-                <Badge label={order.status} variant={orderStatusVariant(order.status)} />
-              </View>
-              <View className="flex-row items-center justify-between">
-                <Text variant="caption" className="text-muted">
-                  {new Date(order.created_at).toLocaleDateString("vi-VN")}
-                </Text>
-                <Text variant="small" className="font-semibold text-primary">{formatVnd(order.total)}</Text>
-              </View>
+            <View className="rounded-lg bg-surface p-3 gap-2">
+              <Pressable
+                onPress={() => router.push(`/order/${order.id}` as any)}
+                className="gap-2 active:opacity-70"
+                accessibilityRole="button"
+                accessibilityLabel={`Order #${order.id}`}
+              >
+                <View className="flex-row items-center justify-between">
+                  <Text variant="small" className="font-semibold">#{order.id} — {order.customer_name ?? "Customer"}</Text>
+                  <Badge label={order.status} variant={orderStatusVariant(order.status)} />
+                </View>
+                <View className="flex-row items-center justify-between">
+                  <Text variant="caption" className="text-muted">
+                    {new Date(order.created_at).toLocaleDateString("vi-VN")}
+                  </Text>
+                  <Text variant="small" className="font-semibold text-primary">{formatVnd(order.total)}</Text>
+                </View>
+              </Pressable>
               {NEXT_STATUSES[order.status as OrderStatus]?.length ? (
                 <Button
                   title="Change status"
@@ -123,7 +135,7 @@ export function AdminOrdersScreen() {
                   onPress={() => handleStatusChange(order.id, order.status as OrderStatus)}
                 />
               ) : null}
-            </Pressable>
+            </View>
           )}
           ListFooterComponent={
             data && data.total > 30 ? (

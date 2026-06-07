@@ -6,8 +6,8 @@ export default function NotFound() {
   return (
     <View className="flex-1 items-center justify-center bg-bg gap-4">
       <Text variant="h1">404</Text>
-      <Text variant="small" className="text-muted">This screen does not exist.</Text>
-      <Link href="/(tabs)" className="text-primary">Go home</Link>
+      <Text variant="small" className="text-muted">Không tìm thấy trang này.</Text>
+      <Link href="/(tabs)" className="text-primary">Về trang chủ</Link>
     </View>
   );
 }
