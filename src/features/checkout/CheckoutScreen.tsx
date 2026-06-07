@@ -53,10 +53,11 @@ export function CheckoutScreen() {
   const placeOrder = usePlaceOrder(user?.id ?? null);
 
   const [step, setStep] = useState(0);
-  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
-    addresses?.find((a) => a.is_default)?.id ?? addresses?.[0]?.id ?? null,
-  );
+  const [selectedAddressIdOverride, setSelectedAddressId] = useState<number | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cod");
+
+  const defaultAddressId = addresses?.find((a) => a.is_default)?.id ?? addresses?.[0]?.id ?? null;
+  const selectedAddressId = selectedAddressIdOverride ?? defaultAddressId;
 
   const items = cart?.cart_items ?? [];
   const subtotal = items.reduce((s, i) => s + i.price * i.quantity, 0);
@@ -99,7 +100,7 @@ export function CheckoutScreen() {
       });
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       track("purchase", { orderId: order.id, total, paymentMethod });
-      router.replace(`/order-confirmation?id=${order.id}` as any);
+      router.replace(`/order/${order.id}` as any);
     } catch (e) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert("Đặt hàng thất bại", (e as AppError).message);

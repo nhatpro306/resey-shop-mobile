@@ -1,5 +1,5 @@
 import React from "react";
-import { View, ScrollView, RefreshControl } from "react-native";
+import { View, ScrollView, Pressable, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
@@ -99,7 +99,7 @@ export function AdminDashboardScreen() {
           <View className="gap-2">
             <Text variant="small" className="font-semibold">Recent orders</Text>
             {dash!.recentOrders.map((o) => (
-              <View key={o.id} className="rounded-lg bg-surface px-4 py-3 flex-row justify-between items-center">
+              <Pressable key={o.id} onPress={() => router.push(`/order/${o.id}` as any)} className="rounded-lg bg-surface px-4 py-3 flex-row justify-between items-center active:opacity-80" accessibilityRole="button">
                 <View>
                   <Text variant="small">#{o.id} — {o.customer_name ?? "Customer"}</Text>
                   <Text variant="caption" className="text-muted">
@@ -110,7 +110,7 @@ export function AdminDashboardScreen() {
                   <Badge label={o.status} variant={orderStatusVariant(o.status)} />
                   <Text variant="caption" className="text-primary font-semibold">{formatVnd(o.total)}</Text>
                 </View>
-              </View>
+              </Pressable>
             ))}
           </View>
         )}

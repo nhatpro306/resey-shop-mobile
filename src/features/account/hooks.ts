@@ -1,3 +1,4 @@
+import { Alert } from "react-native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { qk } from "@/domain/services/keys";
 import { getProfile, updateProfile, uploadAvatar } from "@/domain/services/profile";
@@ -5,6 +6,7 @@ import {
   getAddresses, saveAddress, updateAddress, deleteAddress, setDefaultAddress,
 } from "@/domain/services/address";
 import { getReviewsByProduct, createReview, deleteReview } from "@/domain/services/review";
+import type { AppError } from "@/domain/errors";
 
 export function useProfile(userId: string | null) {
   return useQuery({
@@ -67,6 +69,14 @@ export function useDeleteAddress(userId: string) {
   return useMutation({
     mutationFn: (id: number) => deleteAddress(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["addresses", userId] }),
+    onError: (e) => {
+      const msg = (e as AppError).message ?? "";
+      if (msg.includes("restrict") || msg.includes("violates foreign key")) {
+        Alert.alert("Không thể xoá", "Địa chỉ này đang được dùng cho đơn hàng.");
+      } else {
+        Alert.alert("Lỗi", msg || "Không thể xoá địa chỉ.");
+      }
+    },
   });
 }
 

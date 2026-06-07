@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, TextInput, Alert } from "react-native";
+import { View, ScrollView, TextInput, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useForm, Controller } from "react-hook-form";
@@ -30,8 +30,8 @@ export function ForgotPasswordScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-bg px-6">
-      <View className="flex-1 justify-center gap-6">
+    <SafeAreaView className="flex-1 bg-bg">
+      <ScrollView contentContainerClassName="flex-1 justify-center gap-6 px-6" keyboardShouldPersistTaps="handled">
         <View className="gap-1">
           <Text variant="h1">Forgot password</Text>
           <Text variant="small">We&apos;ll send a reset link to your email.</Text>
@@ -59,7 +59,7 @@ export function ForgotPasswordScreen() {
 
         <Button title="Send reset link" loading={loading} onPress={handleSubmit(onSubmit)} />
         <Button title="Back" variant="ghost" onPress={() => router.back()} />
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
