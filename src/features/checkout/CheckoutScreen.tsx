@@ -53,9 +53,6 @@ export function CheckoutScreen() {
   const placeOrder = usePlaceOrder(user?.id ?? null);
 
   const [step, setStep] = useState(0);
-  // Track only explicit user selections; derive fallback from query data so the
-  // default address is pre-selected as soon as the query resolves without
-  // triggering a setState-in-effect lint error.
   const [manualAddressId, setManualAddressId] = useState<number | null>(null);
   const selectedAddressId =
     manualAddressId ?? addresses?.find((a) => a.is_default)?.id ?? addresses?.[0]?.id ?? null;
@@ -102,7 +99,7 @@ export function CheckoutScreen() {
       });
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       track("purchase", { orderId: order.id, total, paymentMethod });
-      router.replace(`/order-confirmation?id=${order.id}` as any);
+      router.replace(`/order/${order.id}` as any);
     } catch (e) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert("Đặt hàng thất bại", (e as AppError).message);

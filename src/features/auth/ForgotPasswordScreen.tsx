@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Alert } from "react-native";
+import { View, ScrollView, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useForm, Controller } from "react-hook-form";
@@ -31,8 +31,8 @@ export function ForgotPasswordScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-bg px-6">
-      <View className="flex-1 justify-center gap-6">
+    <SafeAreaView className="flex-1 bg-bg">
+      <ScrollView contentContainerClassName="flex-1 justify-center gap-6 px-6" keyboardShouldPersistTaps="handled">
         <View className="gap-1">
           <Text variant="h1">Quên mật khẩu</Text>
           <Text variant="small">Chúng tôi sẽ gửi liên kết đặt lại đến email của bạn.</Text>
@@ -58,7 +58,7 @@ export function ForgotPasswordScreen() {
 
         <Button title="Gửi liên kết đặt lại" loading={loading} onPress={handleSubmit(onSubmit)} />
         <Button title="Quay lại" variant="ghost" onPress={() => router.back()} />
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

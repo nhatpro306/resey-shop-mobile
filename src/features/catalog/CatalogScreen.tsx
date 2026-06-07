@@ -145,6 +145,7 @@ export function CatalogScreen() {
         <FlashList
           data={allProducts}
           numColumns={2}
+          keyboardShouldPersistTaps="handled"
           keyExtractor={(p) => p.product_id}
           contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 16 }}
           renderItem={({ item }) => (
